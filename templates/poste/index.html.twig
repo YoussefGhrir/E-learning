@@ -7,12 +7,12 @@
     <style>
         /* Style pour les commentaires */
         #modal-comments-list li {
-            border-bottom: 1px solid #e9ecef;
+            border: 1px solid #dee2e6; /* Bordure légère */
+            background-color: #ffffff; /* Fond blanc */
+            border-radius: 8px; /* Coins arrondis */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Ombre plus marquée */
             padding: 15px;
             margin-bottom: 10px;
-            background-color: #f9f9f9; /* Fond légèrement gris */
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Ombre légère */
         }
 
         #modal-comments-list li:last-child {
@@ -22,17 +22,17 @@
         /* Style pour l'avatar */
         .rounded-circle {
             border: 2px solid #fff;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            width: 40px;
-            height: 40px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Ombre plus marquée */
+            width: 50px; /* Taille augmentée */
+            height: 50px; /* Taille augmentée */
             object-fit: cover;
         }
 
         /* Style pour le cadre "Pas de photo" */
         .bg-secondary {
             background-color: #6c757d !important;
-            width: 40px;
-            height: 40px;
+            width: 50px; /* Taille augmentée */
+            height: 50px; /* Taille augmentée */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -46,8 +46,8 @@
 
         /* Style pour les boutons Modifier et Supprimer */
         .btn-edit-comment, .btn-delete-comment {
-            padding: 5px 10px;
-            font-size: 12px;
+            padding: 8px 12px; /* Plus d'espace */
+            font-size: 14px; /* Taille de police augmentée */
             margin-right: 5px;
             border: none;
             border-radius: 5px;
@@ -57,17 +57,17 @@
         }
 
         .btn-edit-comment {
-            background-color: #074dff;
-            color: #000;
+            background-color: #007bff; /* Couleur bleue */
+            color: #fff; /* Texte blanc */
         }
 
         .btn-edit-comment:hover {
-            background-color: #e0a800; /* Couleur plus foncée au survol */
+            background-color: #0056b3; /* Couleur plus foncée au survol */
         }
 
         .btn-delete-comment {
-            background-color: #dc3545;
-            color: #fff;
+            background-color: #dc3545; /* Couleur rouge */
+            color: #fff; /* Texte blanc */
         }
 
         .btn-delete-comment:hover {
@@ -80,21 +80,22 @@
 
         /* Style pour le modal */
         .modal-dialog {
-            max-width: 800px; /* Largeur maximale du modal */
+            max-width: 600px; /* Largeur maximale réduite */
             width: 90%; /* Largeur par défaut */
         }
 
         .modal-body {
-            max-height: 70vh; /* Hauteur maximale */
+            max-height: 80vh; /* Hauteur maximale augmentée */
             overflow-y: auto; /* Scroll si nécessaire */
         }
 
         /* Style pour le champ de modification */
         .edit-comment-textarea {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 10px; /* Plus d'espace */
+            border: 1px solid #ced4da; /* Bordure grise */
+            border-radius: 8px; /* Coins arrondis */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Ombre légère */
             resize: vertical;
         }
 
@@ -134,7 +135,7 @@
                     {% set imageName = poste.image %}
                     <!-- Single Post -->
                     <div class="col-lg-6 col-md-6">
-                        <article class="tour-box list-style" data-poste-id="{{ poste.id }}">
+                        <article class="tour-box list-style" data-poste-id="{{ poste.id }}" data-contenu-complet="{{ poste.contenu }}">
                             <div class="tour-box-image">
                                 <img src="{{ asset('uploads/uploadposte/' ~ imageName) }}" alt="">
                             </div>
@@ -216,7 +217,6 @@
         document.addEventListener("DOMContentLoaded", function () {
             const currentUserId = {{ app.user.id|json_encode|raw }};
 
-            // Fonction pour charger les commentaires
             function loadComments(postId) {
                 fetch(`/poste/comments/${postId}`)
                     .then(response => response.json())
@@ -229,26 +229,41 @@
                             li.classList.add("mb-3", "p-3", "bg-light", "rounded");
                             li.dataset.id = comment.id;
                             li.innerHTML = `
-                                <div class="d-flex align-items-start">
-                                    <img src="${comment.user.profilePicture || 'https://via.placeholder.com/40'}" alt="${comment.user.firstName}" class="comment-avatar">
-                                    <div class="comment-content">
-                                        <strong>${comment.user.firstName} ${comment.user.lastName}</strong>
-                                        <small>${new Date(comment.createdAt).toLocaleString('fr-FR')}</small>
-                                        <p class="comment-text">${comment.content}</p>
-                                    </div>
-                                    ${comment.user.id === currentUserId ? `
-                                        <div class="comment-actions">
-                                            <button class="dropdown-toggle" data-bs-toggle="dropdown">
-                                                <i class="fas fa-ellipsis-h"></i>
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item btn-edit-comment" data-comment-id="${comment.id}">Modifier</a>
-                                                <a class="dropdown-item btn-delete-comment" data-comment-id="${comment.id}">Supprimer</a>
-                                            </div>
-                                        </div>
-                                    ` : ''}
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="flex-shrink-0">
+                                    ${comment.user.profilePicture
+                                ? `<img src="${comment.user.profilePicture}" alt="${comment.user.firstName}" class="rounded-circle" width="40" height="40">`
+                                : `<div class="rounded-circle bg-secondary">
+                                            <span class="text-white">Pas de photo</span>
+                                        </div>`
+                            }
                                 </div>
-                            `;
+                                <div class="flex-grow-1 ms-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <strong>${comment.user.firstName} ${comment.user.lastName}</strong>
+                                        <small class="text-muted">${new Date(comment.createdAt).toLocaleString('fr-FR', {
+                                year: 'numeric',
+                                month: 'numeric',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}</small>
+                                    </div>
+                                    <p class="mb-0 comment-content">${comment.content}</p>
+                                    ${comment.user.id === currentUserId
+                                ? `<div class="mt-2">
+                                            <button class="btn btn-sm btn-warning btn-edit-comment" data-comment-id="${comment.id}">
+                                                <i class="fas fa-edit"></i> Modifier
+                                            </button>
+                                            <button class="btn btn-sm btn-danger btn-delete-comment" data-comment-id="${comment.id}">
+                                                <i class="fas fa-trash"></i> Supprimer
+                                            </button>
+                                        </div>`
+                                : ''
+                            }
+                                </div>
+                            </div>
+                        `;
                             commentsList.appendChild(li);
                         });
                         attachCommentEventListeners();
@@ -256,9 +271,7 @@
                     .catch(error => console.error("Erreur lors du chargement des commentaires:", error));
             }
 
-            // Fonction pour attacher les événements des commentaires
             function attachCommentEventListeners() {
-                // Suppression d'un commentaire
                 document.querySelectorAll(".btn-delete-comment").forEach(button => {
                     button.addEventListener("click", function () {
                         const commentId = this.dataset.commentId;
@@ -277,13 +290,12 @@
                     });
                 });
 
-                // Édition d'un commentaire
                 document.querySelectorAll(".btn-edit-comment").forEach(button => {
                     button.addEventListener("click", function () {
                         const commentId = this.dataset.commentId;
                         const commentElement = document.querySelector(`li[data-id="${commentId}"]`);
-                        const commentText = commentElement.querySelector(".comment-text");
-                        const currentContent = commentText.textContent;
+                        const commentContent = commentElement.querySelector(".comment-content");
+                        const currentContent = commentContent.textContent;
 
                         const textarea = document.createElement("textarea");
                         textarea.classList.add("edit-comment-textarea");
@@ -292,18 +304,37 @@
                         const buttonsDiv = document.createElement("div");
                         buttonsDiv.classList.add("edit-comment-buttons");
                         buttonsDiv.innerHTML = `
-                            <button class="save">Enregistrer</button>
-                            <button class="cancel">Annuler</button>
-                        `;
+                        <button class="save">Enregistrer</button>
+                        <button class="cancel">Annuler</button>
+                    `;
 
-                        commentText.replaceWith(textarea);
-                        commentElement.querySelector(".comment-actions").replaceWith(buttonsDiv);
+                        commentContent.replaceWith(textarea);
+                        commentElement.querySelector("div.mt-2").replaceWith(buttonsDiv);
 
                         buttonsDiv.querySelector("button.cancel").addEventListener("click", function () {
-                            textarea.replaceWith(commentText);
-                            buttonsDiv.replaceWith(commentElement.querySelector(".comment-actions"));
+                            // Remplacer le textarea par le contenu original
+                            textarea.replaceWith(commentContent);
+
+                            // Recréer les boutons Modifier et Supprimer
+                            const buttonsDivNew = document.createElement("div");
+                            buttonsDivNew.classList.add("mt-2");
+                            buttonsDivNew.innerHTML = `
+        <button class="btn btn-sm btn-warning btn-edit-comment" data-comment-id="${commentId}">
+            <i class="fas fa-edit"></i> Modifier
+        </button>
+        <button class="btn btn-sm btn-danger btn-delete-comment" data-comment-id="${commentId}">
+            <i class="fas fa-trash"></i> Supprimer
+        </button>
+    `;
+
+                            // Remplacer les anciens boutons par les nouveaux
+                            commentElement.querySelector("div.mt-2").replaceWith(buttonsDivNew);
+
+                            // Réattacher les événements pour les nouveaux boutons
+                            attachCommentEventListeners();
                         });
 
+// Gestion de l'enregistrement
                         buttonsDiv.querySelector("button.save").addEventListener("click", function () {
                             const newContent = textarea.value.trim();
                             if (newContent) {
@@ -317,7 +348,7 @@
                                     .then(response => response.json())
                                     .then(data => {
                                         if (data.success) {
-                                            loadComments(document.getElementById("modal-post-id").value);
+                                            loadComments(document.getElementById("modal-post-id").value); // Recharger les commentaires
                                         }
                                     })
                                     .catch(error => console.error("Erreur lors de la modification du commentaire:", error));
@@ -327,73 +358,20 @@
                 });
             }
 
-            // Ouvrir le modal des commentaires
-            document.querySelectorAll(".btn-comment").forEach(button => {
-                button.addEventListener("click", function (event) {
-                    event.stopPropagation(); // Empêcher la propagation de l'événement
-                    const postId = this.closest(".tour-box").getAttribute("data-poste-id");
+            document.querySelectorAll(".tour-box").forEach(box => {
+                box.addEventListener("click", function () {
+                    const postId = this.getAttribute("data-poste-id");
                     document.getElementById("modal-post-id").value = postId;
-                    document.getElementById("modal-post-image").src = this.closest(".tour-box").querySelector("img").src;
-                    document.getElementById("modal-post-content").textContent = this.closest(".tour-box").querySelector(".entry-content p").textContent;
+                    document.getElementById("modal-post-image").src = this.querySelector("img").src;
+                    document.getElementById("modal-post-content").textContent = this.querySelector(".entry-content p").textContent;
 
-                    // Charger les commentaires
                     loadComments(postId);
 
-                    // Afficher le modal
                     const commentModal = new bootstrap.Modal(document.getElementById("commentModal"));
                     commentModal.show();
                 });
             });
 
-            // Gestion du bouton "Like"
-            document.querySelectorAll(".btn-like").forEach(button => {
-                button.addEventListener("click", function (event) {
-                    event.stopPropagation(); // Empêcher la propagation de l'événement
-                    const postId = this.getAttribute("data-poste-id");
-                    const isLiked = this.querySelector("i").classList.contains("fa-solid");
-
-                    fetch(`/like/toggle/${postId}`, { // Utilisez le bon chemin (path)
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-Requested-With": "XMLHttpRequest", // Indique que c'est une requête AJAX
-                        },
-                        body: JSON.stringify({ like: !isLiked }),
-                    })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error("Erreur réseau");
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data.success) {
-                                const likeIcon = this.querySelector("i");
-                                const likeCount = this.querySelector(".like-count");
-
-                                // Mettre à jour l'icône du like
-                                if (data.liked) {
-                                    likeIcon.classList.remove("fa-regular");
-                                    likeIcon.classList.add("fa-solid");
-                                    likeIcon.style.color = "red";
-                                } else {
-                                    likeIcon.classList.remove("fa-solid");
-                                    likeIcon.classList.add("fa-regular");
-                                    likeIcon.style.color = "";
-                                }
-
-                                // Mettre à jour le compteur de likes
-                                likeCount.textContent = data.likesCount; // Met à jour le nombre de likes dynamiquement
-                            } else {
-                                console.error("Erreur :", data.message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Erreur lors de la gestion du like:", error);
-                        });
-                });
-            });
-            // Ajouter un commentaire
             document.getElementById("comment-form").addEventListener("submit", function (event) {
                 event.preventDefault();
                 const postId = document.getElementById("modal-post-id").value;
@@ -416,6 +394,52 @@
                         }
                     })
                     .catch(error => console.error("Erreur lors de l'ajout du commentaire:", error));
+            });
+        });
+
+        document.querySelectorAll(".btn-like").forEach(button => {
+            button.addEventListener("click", function (event) {
+                event.stopPropagation();
+                const postId = this.getAttribute("data-poste-id");
+                const isLiked = this.querySelector("i").classList.contains("fa-solid");
+
+                fetch(`/like/toggle/${postId}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    body: JSON.stringify({ like: !isLiked }),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Erreur réseau");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            const likeIcon = this.querySelector("i");
+                            const likeCount = this.querySelector(".like-count");
+
+                            if (data.liked) {
+                                likeIcon.classList.remove("fa-regular");
+                                likeIcon.classList.add("fa-solid");
+                                likeIcon.style.color = "red";
+                            } else {
+                                likeIcon.classList.remove("fa-solid");
+                                likeIcon.classList.add("fa-regular");
+                                likeIcon.style.color = "";
+                            }
+
+                            likeCount.textContent = data.likesCount;
+                        } else {
+                            console.error("Erreur :", data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Erreur lors de la gestion du like:", error);
+                    });
             });
         });
     </script>
