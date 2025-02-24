@@ -3,37 +3,66 @@
 {% block title %}New Post{% endblock %}
 
 {% block body %}
-  <div class="w3-content" style="max-width: 800px; margin: 50px auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-    <h1 style="text-align: center; color: #333;">Create New Post</h1>
+  {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+  <div class="background-image" style="position: relative; height: 100vh; background-image: url('{{ asset('images/img.png') }}'); background-size: cover; background-position: center;">
+    <div class="w3-content" style="display: flex; justify-content: center; align-items: center; height: 100%; padding: 20px;">
+      <div style="max-width: 800px; width: 100%; padding: 20px; background-color: rgba(249, 249, 249, 0.8); border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px);">
+        <h1 style="text-align: center; color: #333;">Create New Post</h1>
 
-    {{ form_start(form) }}
+        <div class="form-group">
+          {{ form_row(form.title, { 'attr': {'class': 'form-control', 'placeholder': 'Enter post title...'} }) }}
+        </div>
 
-    <div class="form-group">
-      {{ form_row(form.contenu, { 'attr': {'class': 'form-control', 'placeholder': 'Enter post content...'} }) }}
+        <div class="form-group" style="margin-bottom: 30px;">
+          {{ form_row(form.contenu, { 'attr': {'class': 'form-control', 'placeholder': 'Enter post content...'} }) }}
+        </div>
+
+        <div class="form-group">
+          <div class="drag-drop-area" id="drag-drop-area" style="border: 2px dashed #ccc; padding: 20px; text-align: center; cursor: pointer; margin-bottom: 20px; background-color: #fff; border-radius: 8px;">
+            <p>Drag and drop an image here or click to select a file.</p>
+            <img src="" alt="Preview" class="preview-image" id="preview-image" style="display: none; max-width: 100%; max-height: 200px; border-radius: 8px;">
+            {{ form_widget(form.imageFile, { 'attr': {'style': 'display: none;'} }) }}
+          </div>
+        </div>
+
+        <div class="category-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px;">
+          {% for category in form.categories %}
+            <div class="category-button" data-category-id="{{ category.vars.id }}" style="padding: 10px 15px; border: 1px solid #007bff; border-radius: 20px; cursor: pointer; background-color: #f0f8ff; color: #007bff; font-weight: bold; text-align: center;">
+              {{ form_widget(category, { 'attr': {'style': 'display: none;'} }) }}
+              {{ form_label(category, null, { 'label_attr': {'style': 'cursor: pointer;'} }) }}
+            </div>
+          {% endfor %}
+        </div>
+
+        <button type="submit" style="display: block; width: 100%; padding: 10px; background-color: #28a745; color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">Publish</button>
+
+        {% if form.vars.errors|length > 0 %}
+          <div class="alert alert-danger">
+            <ul>
+              {% for error in form.vars.errors %}
+                <li>{{ error.message }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <a href="{{ path('app_poste_index') }}" class="back-link" style="display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none;">Back to list</a>
+      </div>
     </div>
-
-    <div class="drag-drop-area" id="drag-drop-area" style="border: 2px dashed #ccc; padding: 20px; text-align: center; cursor: pointer; margin-bottom: 20px; background-color: #fff; border-radius: 8px;">
-      <p>Drag and drop an image here or click to select a file.</p>
-      <img src="" alt="Preview" class="preview-image" id="preview-image" style="display: none; max-width: 100%; max-height: 200px; border-radius: 8px;">
-      {{ form_widget(form.imageFile, { 'attr': {'style': 'display: none;'} }) }}
-    </div>
-
-    <div class="category-container" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
-      {% for category in categories %}
-        <button type="button" class="category" data-category-id="{{ category.id }}" style="padding: 10px 15px; background-color: #007bff; color: #fff; border: none; border-radius: 20px; cursor: pointer; transition: background-color 0.3s;">
-          {{ category.tag }}
-        </button>
-      {% endfor %}
-    </div>
-
-    <button type="submit" style="display: block; width: 100%; padding: 10px; background-color: #28a745; color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">Publish</button>
-
-    {{ form_end(form) }}
-
-    <a href="{{ path('app_poste_index') }}" class="back-link" style="display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none;">Back to list</a>
   </div>
+  {{ form_end(form) }}
 
   {% block javascripts %}
+    <script>
+      document.querySelectorAll('.category-button').forEach(button => {
+        button.addEventListener('click', function() {
+          const checkbox = this.querySelector('input[type="checkbox"]');
+          checkbox.checked = !checkbox.checked;
+          this.style.backgroundColor = checkbox.checked ? '#007bff' : '#f0f8ff';
+          this.style.color = checkbox.checked ? '#fff' : '#007bff';
+        });
+      });
+    </script>
     <script>
       const dragDropArea = document.getElementById('drag-drop-area');
       const fileInput = document.querySelector('input[type="file"]');
@@ -78,12 +107,13 @@
       const categories = document.querySelectorAll('.category');
       categories.forEach(category => {
         category.addEventListener('click', () => {
+          const checkbox = category.previousElementSibling;
+          checkbox.checked = !checkbox.checked;
           category.classList.toggle('selected');
-          // Changer la couleur pour indiquer la sélection
-          if (category.classList.contains('selected')) {
+          if (checkbox.checked) {
             category.style.backgroundColor = '#0056b3';
           } else {
-            category.style.backgroundColor = '#007bff';
+            category.style.backgroundColor = '#50a0de';
           }
         });
       });

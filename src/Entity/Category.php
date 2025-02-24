@@ -51,25 +51,24 @@ class Category
         return $this->postes;
     }
 
-    public function addPoste(Poste $poste): static
+    public function addPoste(Poste $poste): self
     {
         if (!$this->postes->contains($poste)) {
-            $this->postes->add($poste);
-            $poste->addCategory($this);
+            $this->postes[] = $poste;
+            $poste->addCategory($this); // Mettre à jour l'entité inverse
         }
 
         return $this;
     }
 
-    public function removePoste(Poste $poste): static
+    public function removePoste(Poste $poste): self
     {
         if ($this->postes->removeElement($poste)) {
-            $poste->removeCategory($this);
+            $poste->removeCategory($this); // Mettre à jour l'entité inverse
         }
 
         return $this;
     }
-
     public function __toString(): string
     {
         return $this->tag ?? '';

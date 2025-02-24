@@ -15,6 +15,10 @@ class PosteType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('title', null, [
+                'label' => 'Title',
+                'attr' => ['placeholder' => 'Enter post Object ...']
+            ])
             ->add('contenu')
             ->add('imageFile', FileType::class, [
                 'label' => 'Image (JPG, PNG, max 2MB)',
@@ -38,6 +42,9 @@ class PosteType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Poste::class,
+            'csrf_protection' => true, // This should be true by default
+            'csrf_field_name' => '_token',
+            'csrf_token_id' => 'post_item', // Unique token ID for this form
         ]);
     }
 }

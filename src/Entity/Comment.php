@@ -23,9 +23,9 @@ class Comment
     #[ORM\ManyToOne(inversedBy: 'comments')]
     private ?User $User = null;
 
-    #[ORM\ManyToOne(inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?poste $poste = null;
+    // Relation ManyToOne avec Poste
+    #[ORM\ManyToOne(targetEntity: Poste::class, inversedBy: 'comments')]
+    private $poste;
 
     public function getId(): ?int
     {

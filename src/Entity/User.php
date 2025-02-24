@@ -149,4 +149,5 @@ public function setIsVerified(bool $isVerified): static
 
     return $this;
 }
+
 }

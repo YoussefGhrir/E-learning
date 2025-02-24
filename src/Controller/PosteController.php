@@ -44,35 +44,40 @@ final class PosteController extends AbstractController{
         'user' => $user,
     ]);
 }
-#[Route('/comment/add/{id}', name: 'add_comment', methods: ['POST'])]
-public function addComment(Request $request, Poste $poste, EntityManagerInterface $entityManager): JsonResponse
-{
-    $data = json_decode($request->getContent(), true);
+    #[Route('/comment/add/{id}', name: 'add_comment', methods: ['POST'])]
+    public function addComment(Request $request, Poste $poste, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
 
-    if (!$data || !isset($data['content']) || empty(trim($data['content']))) {
-        return new JsonResponse(['error' => 'Comment content cannot be empty'], 400);
+        if (!$data || !isset($data['content']) || empty(trim($data['content']))) {
+            return new JsonResponse(['error' => 'Comment content cannot be empty'], 400);
+        }
+
+        $comment = new Comment();
+        $comment->setPoste($poste);
+        $comment->setUser($this->getUser());
+        $comment->setContenu($data['content']);
+        $comment->setCreatedAt(new \DateTime());
+
+        $entityManager->persist($comment);
+        $entityManager->flush();
+
+        $profile = $this->getUser()->getProfile();
+
+        return new JsonResponse([
+            'success' => true,
+            'comment' => [
+                'id' => $comment->getId(),
+                'content' => $comment->getContenu(),
+                'user' => [
+                    'id' => $this->getUser()->getId(),
+                    'firstName' => $profile ? $profile->getFirstName() : 'Anonymous',
+                    'lastName' => $profile ? $profile->getLastName() : 'User',
+                    'profilePicture' => $profile ? $profile->getProfilePicture() : null,
+                ],
+            ],
+        ]);
     }
-
-    $comment = new Comment();
-    $comment->setPoste($poste);
-    $comment->setUser($this->getUser());
-    $comment->setContenu($data['content']);
-    $comment->setCreatedAt(new \DateTime());
-
-    $entityManager->persist($comment);
-    $entityManager->flush();
-
-    return new JsonResponse([
-        'success' => true,
-        'comment' => [
-            'id' => $comment->getId(),
-            'username' => $comment->getUser()->getEmail(),
-            'content' => $comment->getContenu(),
-            'createdAt' => $comment->getCreatedAt()->format('Y-m-d H:i:s'),
-        ]
-    ]);
-
-}
     #[Route('/new', name: 'app_poste_new', methods: ['GET', 'POST'])]
     public function new(
         Request $request,
@@ -163,18 +168,74 @@ public function addComment(Request $request, Poste $poste, EntityManagerInterfac
 
         return $this->redirectToRoute('app_poste_index', [], Response::HTTP_SEE_OTHER);
     }
-    #[Route('/comments/{id}', name: 'get_comments', methods: ['GET'])]
-public function getComments(Poste $poste): JsonResponse
-{
-    $comments = [];
 
-    foreach ($poste->getComments() as $comment) {
-        $comments[] = [
-            'id' => $comment->getId(),
-            'content' => $comment->getContenu(),
-        ];
+
+    #[Route('/comment/edit/{id}', name: 'edit_comment', methods: ['POST'])]
+    public function editComment(Request $request, Comment $comment, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Vérifier si l'utilisateur actuel est le propriétaire du commentaire
+        if ($comment->getUser() !== $this->getUser()) {
+            return new JsonResponse(['error' => 'You are not authorized to edit this comment.'], 403);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (!$data || !isset($data['content']) || empty(trim($data['content']))) {
+            return new JsonResponse(['error' => 'Comment content cannot be empty'], 400);
+        }
+
+        // Mettre à jour le contenu du commentaire
+        $comment->setContenu($data['content']);
+        $entityManager->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'comment' => [
+                'id' => $comment->getId(),
+                'content' => $comment->getContenu(),
+                'createdAt' => $comment->getCreatedAt()->format('Y-m-d H:i'), // Ajout de la date de création
+            ],
+        ]);
     }
 
-    return $this->json(['comments' => $comments]);
-}
+    #[Route('/comment/delete/{id}', name: 'delete_comment', methods: ['POST'])]
+    public function deleteComment(Comment $comment, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Vérifier si l'utilisateur actuel est le propriétaire du commentaire
+        if ($comment->getUser() !== $this->getUser()) {
+            return new JsonResponse(['error' => 'You are not authorized to delete this comment.'], 403);
+        }
+
+        // Supprimer le commentaire
+        $entityManager->remove($comment);
+        $entityManager->flush();
+
+        return new JsonResponse(['success' => true]);
+    }
+    #[Route('/comments/{id}', name: 'get_comments', methods: ['GET'])]
+    public function getComments(Poste $poste): JsonResponse
+    {
+        $comments = [];
+
+        foreach ($poste->getComments() as $comment) {
+            $user = $comment->getUser();
+            $profile = $user->getProfile(); // Récupérer le profil de l'utilisateur
+
+            $comments[] = [
+                'id' => $comment->getId(),
+                'content' => $comment->getContenu(),
+                'createdAt' => $comment->getCreatedAt()->format('Y-m-d H:i:s'), // Ajout de la date de création
+                'user' => [
+                    'id' => $user->getId(),
+                    'firstName' => $profile ? $profile->getFirstName() : 'Anonymous',
+                    'lastName' => $profile ? $profile->getLastName() : 'User',
+                    'profilePicture' => $profile && $profile->getProfilePicture()
+                        ? $this->getParameter('profile_pictures_directory') . '/' . $profile->getProfilePicture()
+                        : null, // Chemin complet de l'image de profil
+                ],
+            ];
+        }
+
+        return $this->json(['comments' => $comments]);
+    }
 }

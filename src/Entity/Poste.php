@@ -42,9 +42,9 @@ class Poste
     /**
      * @var Collection<int, Comment>
      */
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'poste',cascade: ['remove'], orphanRemoval: true)]
-    private Collection $comments;
-
+    // Relation OneToMany avec Comment
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'poste')]
+    private $comments;
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'postes')]
     private Collection $categories;
 
@@ -66,18 +66,21 @@ class Poste
         return $this->categories;
     }
 
-    public function addCategory(Category $category): static
+    public function addCategory(Category $category): self
     {
         if (!$this->categories->contains($category)) {
-            $this->categories->add($category);
+            $this->categories[] = $category;
+            $category->addPoste($this); // Mettre à jour l'entité inverse
         }
 
         return $this;
     }
 
-    public function removeCategory(Category $category): static
+    public function removeCategory(Category $category): self
     {
-        $this->categories->removeElement($category);
+        if ($this->categories->removeElement($category)) {
+            $category->removePoste($this); // Mettre à jour l'entité inverse
+        }
 
         return $this;
     }
@@ -177,6 +180,17 @@ class Poste
                 $comment->setPoste(null);
             }
         }
+
+        return $this;
+    }
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(?string $title): self
+    {
+        $this->title = $title;
 
         return $this;
     }

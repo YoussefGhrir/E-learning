@@ -11,14 +11,14 @@ class CategoryFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $categories = [
-            'Cours',
-            'Vente',
-            'Culture',
-            'Sport',
+            'Sciences',
+            'Langues',
+            'Arts',
             'Technologie',
+            'Business',
             'Santé',
-            'Divertissement',
-            'Voyage',
+            'Développement Personnel',
+            'Vente',  // Ajout de la catégorie Vente
         ];
 
         foreach ($categories as $categoryName) {
