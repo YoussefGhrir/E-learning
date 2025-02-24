@@ -1,0 +1,178 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Poste index{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/post.css') }}">
+{% endblock %}
+{% block body %}
+
+    <div style="height: 70px;"></div>
+
+    <section>
+        <div class="container">
+            <div class="row">
+                {% for poste in postes %}
+                    {% set imageName = poste.image %}
+                    <!-- Single Post -->
+                    <div class="col-lg-6 col-md-6">
+                        <article class="tour-box list-style" data-poste-id="{{ poste.id }}">
+                            <div class="tour-box-image">
+                                <img src="{{ asset('uploads/uploadposte/' ~ imageName) }}" alt="">
+                                <div class="discount-flick">-12%</div>
+                            </div>
+                            <div class="inner-box">
+                                <h3 class="entry-title">
+                                    <a href="tour-detail.html"></a>
+                                </h3>
+                                <div class="entry-content">
+                                    <p>{{ poste.contenu|length > 13 ? poste.contenu|slice(0, 13) ~ '...' : poste.contenu }}</p>
+                                </div>
+                                <!-- Display Categories -->
+                                <div class="categories">
+                                    {% for category in poste.categories %}
+                                        <span class="badge bg-primary">{{ category.tag }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="d-flex">
+                                    {% set isLiked = poste.id in likedPostes %}
+                                    <button class="btn btn-like" data-poste-id="{{ poste.id }}">
+                                        <i class="{{ isLiked ? 'fa-solid fa-heart' : 'fa-regular fa-heart' }}"
+                                           style="color: {{ isLiked ? 'red' : '' }}"></i>
+                                        <span class="like-count">{{ poste.getLikeCount() }}</span>
+                                    </button>
+                                    <button class="btn btn-comment">
+                                        <i class="fa-regular fa-comment"></i> Comment
+                                    </button>
+                                    {% if poste.user.id == user.id %}
+                                        <a href="{{ path('app_poste_edit', {id: poste.id}) }}" class="btn btn-modifier">Modifier</a>
+                                        <form class="delete-form" data-id="{{ poste.id }}" method="POST" action="{{ path('app_poste_delete', {id: poste.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ poste.id) }}">
+                                            <button type="submit" class="btn btn-supprimer">Supprimer</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="commentModalLabel">Post Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="modal-post-image" src="" width="100%" alt="Post Image">
+                    <p id="modal-post-content"></p>
+                    <h5>Comments:</h5>
+                    <ul id="modal-comments-list" class="list-group mb-3"></ul>
+                    <!-- Add Comment Form -->
+                    <form id="comment-form">
+                        <input type="hidden" id="modal-post-id">
+                        <div class="mb-3">
+                            <textarea id="comment-text" class="form-control" placeholder="Write a comment..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Comment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".tour-box").forEach(box => {
+                box.addEventListener("click", function () {
+                    let postId = this.getAttribute("data-poste-id");
+
+                    fetch(`/poste/comments/${postId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            let commentsList = document.getElementById("modal-comments-list");
+                            commentsList.innerHTML = "";
+
+                            data.comments.forEach(comment => {
+                                let li = document.createElement("li");
+                                li.classList.add("list-group-item");
+                                li.textContent = comment.content;
+                                commentsList.appendChild(li);
+                            });
+
+                            document.getElementById("modal-post-id").value = postId;
+                            document.getElementById("modal-post-image").src = this.querySelector("img").src;
+                            document.getElementById("modal-post-content").textContent = this.querySelector(".entry-content p").textContent;
+
+                            let commentModal = new bootstrap.Modal(document.getElementById("commentModal"));
+                            commentModal.show();
+                        })
+                        .catch(error => console.error("Error fetching comments:", error));
+                });
+            });
+
+            document.getElementById("comment-form").addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                let postId = document.getElementById("modal-post-id").value;
+                let commentText = document.getElementById("comment-text").value;
+
+                fetch(`/poste/comment/add/${postId}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ content: commentText }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            let commentsList = document.getElementById("modal-comments-list");
+                            let li = document.createElement("li");
+                            li.classList.add("list-group-item");
+                            li.textContent = commentText;
+                            commentsList.appendChild(li);
+
+                            // Clear the input field
+                            document.getElementById("comment-text").value = "";
+                        }
+                    })
+                    .catch(error => console.error("Error adding comment:", error));
+            });
+
+            document.querySelectorAll(".btn-like").forEach(button => {
+                button.addEventListener("click", function (event) {
+                    event.stopPropagation(); // Prevent triggering the card click event
+                    let posteId = this.getAttribute("data-poste-id");
+                    let likeCount = this.querySelector(".like-count");
+
+                    fetch(`/like/toggle/${posteId}`, { method: "POST" })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.liked) {
+                                // Update like count without reloading the page
+                                let currentCount = parseInt(likeCount.textContent);
+                                likeCount.textContent = currentCount + 1;
+                                this.querySelector("i").classList.add("liked");
+                            } else {
+                                // Optionally handle the case when the like is removed
+                                let currentCount = parseInt(likeCount.textContent);
+                                likeCount.textContent = currentCount - 1;
+                                this.querySelector("i").classList.remove("liked");
+                            }
+                        })
+                        .catch(error => console.error("Error:", error));
+                });
+            });
+        });
+    </script>
+
+{% endblock %}
+{% block javascript %}
+<!-- Bootstrap CSS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

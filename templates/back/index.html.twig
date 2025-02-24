@@ -1,0 +1,34 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Forum Dashboard{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>Forum Dashboard</h2>
+
+    {% for message in messages %}
+        <div class="message border p-3 mb-3">
+            <strong>{{ message.user.email }}</strong>
+            <small class="text-muted">{{ message.createdAt|date('Y-m-d H:i') }}</small>
+            <p>{{ message.content }}</p>
+
+            <!-- Delete button with CSRF protection -->
+            <form action="{{ path('forumdashboard_delete', {'id': message.id}) }}" method="post" style="display: inline;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ message.id) }}">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                    Delete
+                </button>
+            </form>
+
+            <!-- Unreport button (only visible if message is reported) -->
+            {% if message.isSignaled %}
+                <a href="{{ path('forum_unreport_message', {'id': message.id}) }}" class="btn btn-warning btn-sm">
+                    🚨 Unreport
+                </a>
+            {% endif %}
+        </div>
+    {% else %}
+        <p>No messages found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Post{% endblock %}
+
+{% block body %}
+  <div class="w3-content" style="max-width: 800px; margin: 50px auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+    <h1 style="text-align: center; color: #333;">Create New Post</h1>
+
+    {{ form_start(form) }}
+
+    <div class="form-group">
+      {{ form_row(form.contenu, { 'attr': {'class': 'form-control', 'placeholder': 'Enter post content...'} }) }}
+    </div>
+
+    <div class="drag-drop-area" id="drag-drop-area" style="border: 2px dashed #ccc; padding: 20px; text-align: center; cursor: pointer; margin-bottom: 20px; background-color: #fff; border-radius: 8px;">
+      <p>Drag and drop an image here or click to select a file.</p>
+      <img src="" alt="Preview" class="preview-image" id="preview-image" style="display: none; max-width: 100%; max-height: 200px; border-radius: 8px;">
+      {{ form_widget(form.imageFile, { 'attr': {'style': 'display: none;'} }) }}
+    </div>
+
+    <div class="category-container" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+      {% for category in categories %}
+        <button type="button" class="category" data-category-id="{{ category.id }}" style="padding: 10px 15px; background-color: #007bff; color: #fff; border: none; border-radius: 20px; cursor: pointer; transition: background-color 0.3s;">
+          {{ category.tag }}
+        </button>
+      {% endfor %}
+    </div>
+
+    <button type="submit" style="display: block; width: 100%; padding: 10px; background-color: #28a745; color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">Publish</button>
+
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_poste_index') }}" class="back-link" style="display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none;">Back to list</a>
+  </div>
+
+  {% block javascripts %}
+    <script>
+      const dragDropArea = document.getElementById('drag-drop-area');
+      const fileInput = document.querySelector('input[type="file"]');
+      const previewImage = document.getElementById('preview-image');
+
+      dragDropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dragDropArea.classList.add('dragover');
+      });
+
+      dragDropArea.addEventListener('dragleave', () => {
+        dragDropArea.classList.remove('dragover');
+      });
+
+      dragDropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dragDropArea.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        handleFile(file);
+      });
+
+      dragDropArea.addEventListener('click', () => {
+        fileInput.click();
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        handleFile(file);
+      });
+
+      function handleFile(file) {
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            previewImage.src = e.target.result;
+            previewImage.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      const categories = document.querySelectorAll('.category');
+      categories.forEach(category => {
+        category.addEventListener('click', () => {
+          category.classList.toggle('selected');
+          // Changer la couleur pour indiquer la sélection
+          if (category.classList.contains('selected')) {
+            category.style.backgroundColor = '#0056b3';
+          } else {
+            category.style.backgroundColor = '#007bff';
+          }
+        });
+      });
+    </script>
+  {% endblock %}
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+    <!-- HERO SECTION -->
+    <section class="section hero has-bg-image" id="home" aria-label="home"
+             style="background-image: url('{{ asset('images/hero-bg.svg') }}')">
+        <div class="container">
+            <div class="hero-content text-center">
+                <h1 class="h1 section-title">
+                    Le Meilleur Programme pour <span class="orange-text">S'inscrire</span> à un Échange
+                </h1>
+                <p class="hero-text">
+                    Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit.
+                </p>
+                <a href="#" class="btn find-btn has-before">
+                    <span class="span">Trouver des cours</span>
+                    <ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CATEGORY SECTION -->
+    <section class="section category" aria-label="category">
+        <div class="container text-center">
+            <p class="section-subtitle">Catégories</p>
+            <h2 class="h2 section-title">Cours <span class="light-blue-text">En Ligne</span> Pour l'Apprentissage à Distance.</h2>
+            <ul class="grid-list">
+                <li>
+                    <div class="category-card">
+                        <div class="card-icon">
+                            <img src="{{ asset('images/category-1.svg') }}" width="40" height="40" alt="Icone catégorie">
+                        </div>
+                        <h3 class="h3"><a href="#" class="card-title">Programmes de Diplôme en Ligne</a></h3>
+                        <p class="card-text">Lorem ipsum dolor consec tur elit adicing sed umod tempor.</p>
+                        <span class="card-badge">7 Cours</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="section about" id="about" aria-label="about">
+        <div class="container text-center">
+            <p class="section-subtitle">À Propos de Nous</p>
+            <h2 class="h2 section-title">Plus de 10 Ans dans <span class="span">l'apprentissage à distance</span></h2>
+            <p class="section-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+    </section>
+
+    <!-- COURSES SECTION -->
+    <section class="section course" id="courses" aria-label="course">
+        <div class="container text-center">
+            <p class="section-subtitle">Cours Populaires</p>
+            <h2 class="h2 section-title">Choisissez un Cours pour Commencer</h2>
+            <ul class="grid-list">
+                <li>
+                    <div class="course-card">
+                        <figure class="card-banner img-holder">
+                            <img src="{{ asset('images/course-1.jpg') }}" width="370" height="220" alt="Cours HTML et CSS">
+                        </figure>
+                        <div class="card-content">
+                            <span class="badge">Débutant</span>
+                            <h3 class="h3"><a href="#" class="card-title">Construire des Sites Web Réactifs</a></h3>
+                            <p class="price">$29.00</p>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <a href="#" class="btn browse-btn">Parcourir plus de cours</a>
+        </div>
+    </section>
+{% endblock %}

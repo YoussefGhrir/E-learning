@@ -1,0 +1,30 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block body %}
+<div class="table-data">
+    <div class="order">
+        <div class="head">
+            <h3>User Details</h3>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Roles:</strong> {{ user.roles|json_encode }}</p>
+                <p><strong>Created At:</strong> {{ user.createdAt|date('Y-m-d H:i') }}</p>
+                <p><strong>Active:</strong> {{ user.isActive ? 'Yes' : 'No' }}</p>
+            </div>
+        </div>
+
+        <a href="{{ path('app_user_index') }}" class="btn btn-secondary mt-3">
+            <i class="bx bx-arrow-back"></i> Back to list
+        </a>
+        
+        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-warning mt-3">
+            <i class="bx bx-edit"></i> Edit
+        </a>
+
+        {{ include('user/_delete_form.html.twig', {'user': user}) }}
+    </div>
+</div>
+{% endblock %}

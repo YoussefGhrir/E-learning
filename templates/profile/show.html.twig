@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block body %}
+    <h1>Profile Details</h1>
+
+    {% if profile.profilePicture %}
+        <img src="{{ asset(profile.profilePicture) }}" alt="Profile Picture" class="img-fluid rounded-circle" width="150">
+    {% else %}
+        <p>No profile picture uploaded.</p>
+    {% endif %}
+
+    <p><strong>First Name:</strong> {{ profile.firstName }}</p>
+    <p><strong>Last Name:</strong> {{ profile.lastName }}</p>
+    <p><strong>Phone:</strong> {{ profile.phoneNumber }}</p>
+
+    <a href="{{ path('app_profile_edit', {'id': profile.id}) }}" class="btn btn-primary">Edit Profile</a>
+    <a href="{{ path('app_profile_index') }}" class="btn btn-secondary">Back to Profiles</a>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %} Users Management {% endblock %}
+
+{% block body %}
+<div class="table-data">
+    <div class="order">
+        <div class="head">
+            <h3>Users List</h3>
+            <a href="{{ path('app_user_new') }}" class="btn btn-primary btn-sm">
+                <i class="bx bxs-user-plus"></i> Add User
+            </a>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>
+                            <img src="{{ asset('img/people.png') }}" alt="User Image" class="user-img">
+                            {{ user.email }}
+                        </td>
+                        
+                        <td><span class="badge bg-secondary">{{ user.roles|json_encode }}</span></td>
+                        <td>
+                            {% if user.isActive %}
+                                <span class="status completed">Active</span>
+                            {% else %}
+                                <span class="status pending">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.createdAt|date('Y-m-d H:i') }}</td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group">
+                                <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-info btn-sm">
+                                    <i class="bx bx-show"></i> View
+                                </a>
+                                <a href="{{ path('app_user_edit', {'id': user.id}) }}"
+                                    class="btn btn-warning">
+                                    <i class="bx bx-edit"></i> Edit
+                                </a>
+                                {{ include('user/_delete_form.html.twig') }}
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">No users found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

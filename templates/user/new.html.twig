@@ -1,0 +1,67 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Add New User{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="head-title">
+        <div class="left">
+            <h1>Add New User</h1>
+            <ul class="breadcrumb">
+                <li>
+                    <a href="{{ path('app_user_index') }}">Users</a>
+                </li>
+                <li><i class='bx bx-chevron-right'></i></li>
+                <li>
+                    <a class="active" href="#">New User</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="table-data">
+        <div class="order">
+            <div class="head">
+                <h3>Create User</h3>
+            </div>
+
+            {{ form_start(form, {'action': path('app_user_new'), 'method': 'POST'}) }}
+            
+            <div class="form-group">
+                {{ form_label(form.email, 'Email') }}
+                {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.password, 'Password') }}
+                {{ form_widget(form.password, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.roles, 'Roles') }}
+                {{ form_widget(form.roles, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.isActive, 'Active') }}
+                {{ form_widget(form.isActive) }}
+            </div>
+
+            {# CSRF Protection #}
+            {{ form_row(form._token) }}
+
+            <button type="submit" class="btn btn-success">
+                <i class="bx bx-plus-circle"></i> Add User
+            </button>
+
+            {{ form_end(form, {'render_rest': false}) }} 
+
+            <br>
+
+            <a href="{{ path('app_user_index') }}" class="btn btn-secondary">
+                <i class="bx bx-arrow-back"></i> Back to list
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login{% endblock %}
+
+{% block body %}
+    <!-- HERO SECTION -->
+    <section class="section hero has-bg-image" id="home" aria-label="home"
+             style="background-image: url('{{ asset('images/hero-bg.svg') }}')">
+        <div class="container">
+            <div class="hero-content text-center">
+                <h1 class="h1 section-title">
+                    Connexion à <span class="orange-text">votre compte</span>
+                </h1>
+                <p class="hero-text">
+                    Accédez à votre espace personnel pour gérer vos cours et vos informations.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOGIN SECTION -->
+    <section class="section login" aria-label="login">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card ">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h2 class="card-title mb-0">Connexion</h2>
+                        </div>
+                        <div class="card-body">
+                            {% if error %}
+                                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                            {% endif %}
+
+                            <form method="post">
+                                <!-- CSRF Token -->
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                                <div class="mb-3">
+                                    <label for="inputEmail" class="form-label">Email</label>
+                                    <input type="email" name="email" id="inputEmail" class="form-control" required autofocus>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="inputPassword" class="form-label">Mot de passe</label>
+                                    <input type="password" name="password" id="inputPassword" class="form-control" required>
+                                </div>
+
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg login-btn">Se connecter</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

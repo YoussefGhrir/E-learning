@@ -1,0 +1,115 @@
+
+
+.container {
+    max-width: 800px; /* Centered container */
+    margin: auto;
+}
+
+.tour-box {
+    background: #ffffff; /* White card background */
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin-bottom: 20px; /* Spacing between cards */
+    overflow: hidden; /* Clean overflow */
+    transition: transform 0.2s; /* Animation for hover */
+}
+
+.tour-box:hover {
+    transform: translateY(-3px); /* Lift effect on hover */
+}
+
+.tour-box-image img {
+    width: 100%; /* Full width */
+    height: 180px; /* Fixed height */
+    object-fit: cover; /* Cover image */
+}
+
+.inner-box {
+    padding: 15px; /* Padding inside the card */
+}
+
+.entry-title {
+    font-size: 18px; /* Title size */
+    font-weight: bold; /* Bold title */
+    color: #333; /* Dark title color */
+    margin: 10px 0; /* Margin around title */
+}
+
+.entry-content {
+    font-size: 14px; /* Content size */
+    color: #555; /* Slightly lighter color */
+    margin-bottom: 15px; /* Bottom margin */
+    line-height: 1.5; /* Line height for readability */
+}
+
+/* Button Styles */
+.btn {
+    cursor: pointer;
+    border: none; /* No border */
+    border-radius: 20px; /* Rounded buttons */
+    padding: 8px 12px; /* Button padding */
+    font-size: 14px; /* Font size */
+    transition: background 0.3s, transform 0.2s; /* Transition for hover */
+    display: inline-flex; /* Flex for icon alignment */
+    align-items: center; /* Center vertically */
+}
+
+.btn-like {
+    background: #1877f2; /* Facebook blue */
+    color: white; /* White text */
+}
+
+.btn-like:hover {
+    background: #155dbb; /* Darker blue on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.btn-comment {
+    background: #e9ecef; /* Light gray for comments */
+    color: #333; /* Dark text */
+}
+
+.btn-comment:hover {
+    background: #d3d3d3; /* Darker gray on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.btn-modifier {
+    background: #007bff; /* Bootstrap primary color */
+    color: white; /* White text */
+}
+
+.btn-modifier:hover {
+    background: #0056b3; /* Darker on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.btn-supprimer {
+    background: #dc3545; /* Bootstrap danger color */
+    color: white; /* White text */
+}
+
+.btn-supprimer:hover {
+    background: #c82333; /* Darker red on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.d-flex {
+    display: flex; /* Flexbox for button alignment */
+    justify-content: space-between; /* Space between buttons */
+    align-items: center; /* Center vertically */
+    margin-top: 10px; /* Margin above buttons */
+}
+
+.discount-flick {
+    background: #ff4d4d; /* Discount badge */
+    color: white; /* White text */
+    font-size: 12px; /* Smaller font */
+    font-weight: bold; /* Bold */
+    padding: 5px 8px; /* Padding */
+    border-radius: 12px; /* Rounded badge */
+    display: inline-block; /* Inline block */
+    position: absolute; /* Positioned in the card */
+    top: 10px; /* Top position */
+    left: 10px; /* Left position */
+}

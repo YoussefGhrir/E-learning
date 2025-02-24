@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register - 9arini{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+{% endblock %}
+
+{% block body %}
+<section class="section hero has-bg-image" aria-label="Register"
+    style="background-image: url('{{ asset('images/hero-bg.svg') }}');">
+    <div class="container">
+        <div class="register-box">
+            <h2>Create an Account</h2>
+
+            {{ form_start(registrationForm) }}
+
+            <div class="input-group">
+                {{ form_row(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder': 'Email'}}) }}
+            </div>
+
+            <div class="input-group">
+                {{ form_row(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Password'}}) }}
+            </div>
+
+            <div class="roles-container">
+                <label>Select Role:</label>
+                {{ form_widget(registrationForm.roles) }}
+            </div>
+
+            <button type="submit" class="register-btn">Register</button>
+
+            {{ form_end(registrationForm) }}
+
+            <p class="login-link">Already have an account? <a href="{{ path('app_login') }}">Sign in</a></p>
+        </div>
+    </div>
+</section>
+{% endblock %}

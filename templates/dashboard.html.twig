@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <!-- My CSS -->
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    
+    <title>{% block title %} 9arini {% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <section id="sidebar">
+        <a href="#" class="brand">
+            <img src="{{ asset('img/logo.png') }}" alt="9arini" class="logo-img">
+        </a>
+
+        <ul class="side-menu top">
+            {% if is_granted('ROLE_ADMIN') %}
+                <li class="active">
+                    <a href="{{ path('app_user_index') }}">
+                        <i class='bx bxs-group'></i>
+                        <span class="text">User Management</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% if is_granted('ROLE_PARTNER') or is_granted('ROLE_ADMIN') %}
+                <li>
+                    <a href="/offers_dashboard">
+                        <i class='bx bxs-shopping-bag-alt'></i>
+                        <span class="text">Offers</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% if is_granted('ROLE_TEACHER') or is_granted('ROLE_ADMIN') %}
+                <li>
+                    <a href="/cours_dashboard">
+                        <i class='bx bxs-book-alt'></i>
+                        <span class="text">Courses</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            <li>
+                <a href="/forums_dashboard">
+                    <i class='bx bxs-message-dots'></i>
+                    <span class="text">Forum</span>
+                </a>
+            </li>
+        </ul>
+
+        <ul class="side-menu">
+            <li>
+                <a href="#">
+                    <i class='bx bxs-cog'></i>
+                    <span class="text">Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_logout') }}" class="logout">
+                    <i class='bx bxs-log-out-circle'></i>
+                    <span class="text">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+    <!-- SIDEBAR -->
+
+    <!-- CONTENT -->
+    <section id="content">
+        <!-- NAVBAR -->
+        <nav>
+            <i class='bx bx-menu'></i>
+            <a href="#" class="nav-link">Models</a>
+            <form action="#">
+                <div class="form-input">
+                    <input type="search" placeholder="Search...">
+                    <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                </div>
+            </form>
+            <a href="#" class="profile">
+                <img src="{{ asset('img/people.png') }}">
+            </a>
+        </nav>
+        <!-- NAVBAR -->
+
+        <!-- MAIN -->
+        <main>
+            <div class="head-title">
+                <div class="left">
+                    <h1>Dashboard</h1>
+                    <ul class="breadcrumb">
+                        <li>
+                            <a href="#">Dashboard</a>
+                        </li>
+                        <li><i class='bx bx-chevron-right'></i></li>
+                        <li>
+                            <a class="active" href="#">Home</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            {% block body %}
+                <!-- Show additional content based on roles -->
+                {% if is_granted('ROLE_ADMIN') %}
+                    <h2>Welcome Admin</h2>
+                    <p>You have full control over users and settings.</p>
+                {% elseif is_granted('ROLE_TEACHER') %}
+                    <h2>Welcome Teacher</h2>
+                    <p>You can manage your courses and students.</p>
+                {% elseif is_granted('ROLE_PARTNER') %}
+                    <h2>Welcome Partner</h2>
+                    <p>You can add and manage offers.</p>
+                {% elseif is_granted('ROLE_STUDENT') %}
+                    <h2>Welcome Student</h2>
+                    <p>Enjoy exploring the platform.</p>
+                {% endif %}
+            {% endblock %}
+        </main>
+        <!-- MAIN -->
+    </section>
+    <!-- CONTENT -->
+
+    <script src="{{ asset('js/script1.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Forum{% endblock %}
+
+{% block body %}
+<style>
+ body {
+      padding-top: 70px; /* Ajusté pour compenser le header */
+  }
+/* Center the chat UI */
+.container-fluid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+}
+
+/* Chat box styling */
+.chat-box {
+    width: 500px;
+    max-width: 90%;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Messages container */
+#messages-container {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border-bottom: 2px solid #ddd;
+}
+
+/* Individual messages */
+.message {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Make the user info stand out */
+.message strong {
+    color: #007bff;
+}
+
+.message small {
+    float: right;
+    color: gray;
+}
+
+/* Style buttons */
+button {
+    border: none;
+    padding: 5px 10px;
+    margin: 5px 5px 0 0;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.report-btn {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.report-btn:hover {
+    background-color: #cc0000;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #b02a37;
+}
+
+.edit-btn {
+    background-color: #ffc107;
+    color: black;
+}
+
+.edit-btn:hover {
+    background-color: #e0a800;
+}
+
+/* Input form */
+#message-form {
+    padding: 15px;
+    background-color: white;
+    border-top: 2px solid #ddd;
+}
+
+/* Input box */
+#message-text {
+    width: 100%;
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+/* Submit button */
+#message-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#message-form button:hover {
+    background-color: #0056b3;
+}
+</style>
+
+<!-- Stocker l'ID de l'utilisateur connecté -->
+<script>
+    const currentUserId = {{ user.email|json_encode|raw }};
+</script>
+
+<div class="container-fluid">
+    <div class="chat-box">
+        
+        <!-- Messages Container -->
+        <div id="messages-container">
+            {% for message in messages %}
+                <div class="message" data-id="{{ message.id }}">
+                    <strong>{{ message.user.email }}</strong>
+                    <small>{{ message.createdAt|date('Y-m-d H:i') }}</small>
+                    <p>{{ message.content }}</p>
+                    <button class="report-btn" data-id="{{ message.id }}">🚨 Report</button>
+                    {% if message.user.id == user.id %}
+                        <button class="delete-btn" data-id="{{ message.id }}">🗑 Delete</button>
+       
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Message Input Form -->
+        <form id="message-form">
+            <div class="mb-3">
+                <textarea id="message-text" class="form-control" placeholder="Écrire un message..." required></textarea>
+            </div>
+            <button type="submit">Envoyer</button>
+        </form>
+    </div>
+</div>
+
+<script>
+
+function loadMessages() {
+     console.log(currentUserId);
+    fetch("/forum/messages")
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.messages);
+            const messagesContainer = document.getElementById("messages-container");
+            messagesContainer.innerHTML = "";
+            data.messages.forEach(message => {
+                
+                let messageDiv = document.createElement("div");
+                messageDiv.classList.add("message");
+                messageDiv.dataset.id = message.id;
+                messageDiv.innerHTML = `
+                    <strong>${message.user}</strong>
+                    <small>${message.createdAt}</small>
+                    <p>${message.content}</p>
+                    <button class="report-btn" data-id="${message.id}">🚨 Report</button>
+                    ${message.user == currentUserId ? `
+                        <button class="delete-btn" data-id="${message.id}">🗑 Delete</button>
+                    ` : ""}
+                `;
+                messagesContainer.appendChild(messageDiv);
+            });
+
+            attachEventListeners();
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        })
+        .catch(error => console.error("Erreur lors du chargement des messages:", error));
+}
+
+// Attacher les événements après chargement
+function attachEventListeners() {
+    document.querySelectorAll('.report-btn').forEach(button => {
+        button.onclick = function () {
+            const messageId = this.dataset.id;
+            fetch(`/forum/report/${messageId}`, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) alert("Message reported!");
+            });
+        };
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.onclick = function () {
+            const messageId = this.dataset.id;
+            fetch(`/forum/delete/${messageId}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.querySelector(`.message[data-id="${messageId}"]`).remove();
+                }
+            });
+        };
+    });
+}
+
+// Envoyer un message
+document.getElementById("message-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+    const messageText = document.getElementById("message-text").value.trim();
+    if (!messageText) return;
+
+    fetch("/forum/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: messageText }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById("message-text").value = "";
+            loadMessages();
+        } else {
+            alert("Échec de l'envoi du message.");
+        }
+    })
+    .catch(error => console.error("Erreur lors de l'envoi du message:", error));
+});
+
+// Charger les messages au chargement de la page
+document.addEventListener("DOMContentLoaded", loadMessages);
+</script>
+
+{% endblock %}

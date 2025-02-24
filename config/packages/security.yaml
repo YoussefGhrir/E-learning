@@ -1,0 +1,61 @@
+security:
+    enable_authenticator_manager: true
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_USER]
+        ROLE_TEACHER: [ROLE_USER]
+        ROLE_PARTNER: [ROLE_USER]
+        ROLE_STUDENT: [ROLE_USER]
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email 
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            provider: app_user_provider
+            entry_point: App\Security\LoginFormAuthenticator
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                default_target_path: app_homepage  # ✅ Redirect to the homepage
+            logout:
+                path: app_logout
+                target: app_home
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+                path: /
+            custom_authenticator: App\Security\LoginFormAuthenticator
+    access_control:
+        # ✅ Allow anyone to access registration & login
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+
+        # ✅ Allow public access to the homepage
+        - { path: ^/home, roles: PUBLIC_ACCESS }
+
+        # ✅ Admin-only access to the dashboard
+        - { path: ^/dashboard, roles: ROLE_ADMIN }
+
+        # ✅ Teachers can manage courses, students can only view
+        - { path: ^/cours/new, roles: ROLE_TEACHER }  # Teachers can create courses
+        - { path: ^/cours/edit, roles: ROLE_TEACHER } # Teachers can edit courses
+        - { path: ^/cours, roles: PUBLIC_ACCESS }     # Students & guests can view
+
+        # ✅ Partners can manage offers, students can only view
+        - { path: ^/offers/new, roles: ROLE_PARTNER }  # Partners can create offers
+        - { path: ^/offers/edit, roles: ROLE_PARTNER } # Partners can edit offers
+        - { path: ^/offers, roles: PUBLIC_ACCESS }     # Students & guests can view
+
+        # ✅ Students can only access public pages (NOT dashboard)
+        - { path: ^/home, roles: ROLE_STUDENT } 
+
+        # ✅ Force authentication for all other pages
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+
