@@ -81,13 +81,16 @@ class ForumController extends AbstractController
     }
     #[Route('/delete/{id}', name: 'forum_delete_message', methods: ['DELETE'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function deleteMessage(Message $message, EntityManagerInterface $entityManager,MessageRepository $messageRepository): JsonResponse
+    public function deleteMessage(Message $message, EntityManagerInterface $entityManager): JsonResponse
     {
         $user = $this->getUser();
-        if ($message->getUser() !== $user || !$this->isGranted('ROLE_ADMIN')) {
+
+        // Autoriser la suppression si l'utilisateur est le propriétaire du message OU s'il est administrateur
+        if ($message->getUser()->getId() !== $user->getId() && !$this->isGranted('ROLE_ADMIN')) {
             return $this->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
+        // Supprimer le message
         $entityManager->remove($message);
         $entityManager->flush();
 

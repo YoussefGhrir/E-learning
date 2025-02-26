@@ -734,4 +734,116 @@ body {
 	#content main .table-data .todo .todo-list {
 		min-width: 420px;
 	}
+	/* Bouton fixe pour ouvrir le chatbot */
+	.chatbot-toggle {
+		position: fixed;
+		bottom: 20px;
+		right: 20px;
+		background-color: #007bff;
+		color: white;
+		border: none;
+		border-radius: 50%;
+		width: 50px;
+		height: 50px;
+		font-size: 24px;
+		cursor: pointer;
+		box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+		z-index: 1000;
+	}
+
+	.chatbot-toggle:hover {
+		background-color: #0056b3;
+	}
+
+	/* Modal du chatbot */
+	.chatbot-modal {
+		display: none;
+		position: fixed;
+		bottom: 80px;
+		right: 20px;
+		width: 350px;
+		height: 500px;
+		background-color: white;
+		border-radius: 10px;
+		box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+		z-index: 1000;
+	}
+
+	.chatbot-modal-content {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
+
+	.chatbot-header {
+		padding: 10px;
+		background-color: #007bff;
+		color: white;
+		border-top-left-radius: 10px;
+		border-top-right-radius: 10px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.chatbot-close {
+		background: none;
+		border: none;
+		color: white;
+		font-size: 24px;
+		cursor: pointer;
+	}
+
+	.chatbot-messages {
+		flex-grow: 1;
+		padding: 10px;
+		overflow-y: auto;
+		background-color: #f9f9f9;
+	}
+
+	.chatbot-form {
+		display: flex;
+		padding: 10px;
+		background-color: #fff;
+		border-top: 1px solid #ddd;
+	}
+
+	.chatbot-form textarea {
+		flex-grow: 1;
+		padding: 10px;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		resize: none;
+	}
+
+	.chatbot-form button {
+		margin-left: 10px;
+		padding: 10px 15px;
+		background-color: #007bff;
+		color: white;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	.chatbot-form button:hover {
+		background-color: #0056b3;
+	}
+
+	/* Styles pour les messages */
+	.message {
+		margin-bottom: 10px;
+		padding: 10px;
+		border-radius: 5px;
+		background-color: #fff;
+		box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+	}
+
+	.message strong {
+		color: #007bff;
+	}
+
+	.message p {
+		margin: 5px 0 0;
+	}
 }

@@ -1,247 +1,327 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Forum{% endblock %}
+{% block stylesheets %} <style>
+    body {
+        padding-top: 120px;
+        margin: 0;
+        background-image: url('{{ asset('images/img.png') }}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    .container-fluid {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .chat-box {
+        width: 900px;
+        max-width: 95%;
+        height: 85vh;
+        display: flex;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+
+    #messages-container {
+        flex-grow: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    .message {
+        background: rgba(248, 249, 250, 0.9);
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .message strong {
+        color: #007bff;
+    }
+
+    .message small {
+        float: right;
+        color: #999;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px; /* Espacement entre les boutons */
+    }
+
+    button {
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px; /* Espacement entre icône et texte */
+        transition: background-color 0.3s ease;
+    }
+
+    .report-btn {
+        background-color: #ffcc00;
+        color: black;
+    }
+
+    .report-btn:hover {
+        background-color: #e6b800;
+    }
+
+    .delete-btn {
+        background-color: #ff4d4d;
+        color: white;
+    }
+
+    .delete-btn:hover {
+        background-color: #cc0000;
+    }
+
+    .theme-toggle {
+        position: fixed;
+        top: 135px; /* Décalé de 120px + 15px */
+        right: 15px;
+        background-color: #007bff;
+        color: white;
+        padding: 10px;
+        border-radius: 50%;
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dark-mode {
+        background-color: #1e1e1e;
+        color: white;
+    }
+
+    .dark-mode .chat-box {
+        background: rgba(30, 30, 30, 0.9);
+    }
+
+    .dark-mode #messages-container {
+        background-color: rgba(40, 40, 40, 0.8);
+    }
+
+    #message-form {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-top: 2px solid #ddd;
+    }
+
+    #message-text {
+        flex-grow: 1;
+        border-radius: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        resize: none;
+        margin-right: 10px;
+    }
+
+    #mic-button {
+        background-color: #6a28a7;
+        color: white;
+    }
+
+    .language-select {
+        margin-right: 10px;
+        padding: 5px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
+    </style>{% endblock %}
 
 {% block body %}
-<style>
- body {
-      padding-top: 70px; /* Ajusté pour compenser le header */
-  }
-/* Center the chat UI */
-.container-fluid {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f4f4f4;
-}
 
-/* Chat box styling */
-.chat-box {
-    width: 500px;
-    max-width: 90%;
-    height: 80vh;
-    display: flex;
-    flex-direction: column;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
 
-/* Messages container */
-#messages-container {
-    flex-grow: 1;
-    padding: 15px;
-    overflow-y: auto;
-    background-color: #ffffff;
-    border-bottom: 2px solid #ddd;
-}
+    <div class="container-fluid">
+        <div class="chat-box">
+            <div id="messages-container">
 
-/* Individual messages */
-.message {
-    background: #f8f9fa;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
-
-/* Make the user info stand out */
-.message strong {
-    color: #007bff;
-}
-
-.message small {
-    float: right;
-    color: gray;
-}
-
-/* Style buttons */
-button {
-    border: none;
-    padding: 5px 10px;
-    margin: 5px 5px 0 0;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.report-btn {
-    background-color: #ff4d4d;
-    color: white;
-}
-
-.report-btn:hover {
-    background-color: #cc0000;
-}
-
-.delete-btn {
-    background-color: #dc3545;
-    color: white;
-}
-
-.delete-btn:hover {
-    background-color: #b02a37;
-}
-
-.edit-btn {
-    background-color: #ffc107;
-    color: black;
-}
-
-.edit-btn:hover {
-    background-color: #e0a800;
-}
-
-/* Input form */
-#message-form {
-    padding: 15px;
-    background-color: white;
-    border-top: 2px solid #ddd;
-}
-
-/* Input box */
-#message-text {
-    width: 100%;
-    border-radius: 5px;
-    padding: 10px;
-    border: 1px solid #ccc;
-}
-
-/* Submit button */
-#message-form button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-#message-form button:hover {
-    background-color: #0056b3;
-}
-</style>
-
-<!-- Stocker l'ID de l'utilisateur connecté -->
-<script>
-    const currentUserId = {{ user.email|json_encode|raw }};
-</script>
-
-<div class="container-fluid">
-    <div class="chat-box">
-        
-        <!-- Messages Container -->
-        <div id="messages-container">
-            {% for message in messages %}
-                <div class="message" data-id="{{ message.id }}">
-                    <strong>{{ message.user.email }}</strong>
-                    <small>{{ message.createdAt|date('Y-m-d H:i') }}</small>
-                    <p>{{ message.content }}</p>
-                    <button class="report-btn" data-id="{{ message.id }}">🚨 Report</button>
-                    {% if message.user.id == user.id %}
-                        <button class="delete-btn" data-id="{{ message.id }}">🗑 Delete</button>
-       
-                    {% endif %}
-                </div>
-            {% endfor %}
-        </div>
-        
-        <!-- Message Input Form -->
-        <form id="message-form">
-            <div class="mb-3">
-                <textarea id="message-text" class="form-control" placeholder="Écrire un message..." required></textarea>
             </div>
-            <button type="submit">Envoyer</button>
-        </form>
+
+
+            <form id="message-form">
+                <textarea id="message-text" placeholder="Écrire un message..." required></textarea>
+                <select class="language-select" id="language-select">
+                    <option value="fr-FR">Français</option>
+                    <option value="en-US">English</option>
+                    <option value="ar-SA">العربية</option>
+                </select>
+                <button type="button" id="mic-button">🎤</button>
+                <button type="submit">Envoyer</button>
+            </form>
+        </div>
     </div>
-</div>
 
-<script>
+    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
 
-function loadMessages() {
-     console.log(currentUserId);
-    fetch("/forum/messages")
-        .then(response => response.json())
-        .then(data => {
-            console.log(data.messages);
-            const messagesContainer = document.getElementById("messages-container");
-            messagesContainer.innerHTML = "";
-            data.messages.forEach(message => {
-                
-                let messageDiv = document.createElement("div");
-                messageDiv.classList.add("message");
-                messageDiv.dataset.id = message.id;
-                messageDiv.innerHTML = `
-                    <strong>${message.user}</strong>
-                    <small>${message.createdAt}</small>
-                    <p>${message.content}</p>
-                    <button class="report-btn" data-id="${message.id}">🚨 Report</button>
-                    ${message.user == currentUserId ? `
-                        <button class="delete-btn" data-id="${message.id}">🗑 Delete</button>
-                    ` : ""}
-                `;
-                messagesContainer.appendChild(messageDiv);
-            });
 
-            attachEventListeners();
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        })
-        .catch(error => console.error("Erreur lors du chargement des messages:", error));
-}
 
-// Attacher les événements après chargement
-function attachEventListeners() {
-    document.querySelectorAll('.report-btn').forEach(button => {
-        button.onclick = function () {
-            const messageId = this.dataset.id;
-            fetch(`/forum/report/${messageId}`, { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) alert("Message reported!");
-            });
-        };
-    });
-
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.onclick = function () {
-            const messageId = this.dataset.id;
-            fetch(`/forum/delete/${messageId}`, { method: 'DELETE' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.querySelector(`.message[data-id="${messageId}"]`).remove();
-                }
-            });
-        };
-    });
-}
-
-// Envoyer un message
-document.getElementById("message-form").addEventListener("submit", function (event) {
-    event.preventDefault();
-    const messageText = document.getElementById("message-text").value.trim();
-    if (!messageText) return;
-
-    fetch("/forum/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: messageText }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById("message-text").value = "";
-            loadMessages();
-        } else {
-            alert("Échec de l'envoi du message.");
+{% block javascripts %}
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+            location.reload();
         }
-    })
-    .catch(error => console.error("Erreur lors de l'envoi du message:", error));
-});
 
-// Charger les messages au chargement de la page
-document.addEventListener("DOMContentLoaded", loadMessages);
-</script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        });
 
+        const micButton = document.getElementById("mic-button");
+        const messageInput = document.getElementById("message-text");
+        const languageSelect = document.getElementById("language-select");
+
+        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.continuous = false;
+
+            micButton.addEventListener("click", () => {
+                recognition.lang = languageSelect.value;
+                recognition.start();
+            });
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                messageInput.value = transcript;
+            };
+        } else {
+            micButton.style.display = "none";
+        }
+    </script>
+    <!-- Stocker l'ID de l'utilisateur connecté -->
+    <script>
+        const currentUserId = {{ user.email|json_encode|raw }};
+    </script>
+    <script>
+        function loadMessages() {
+            fetch("/forum/messages")
+                .then(response => response.json())
+                .then(data => {
+                    const messagesContainer = document.getElementById("messages-container");
+                    messagesContainer.innerHTML = "";
+                    data.messages.forEach(message => {
+                        let messageDiv = document.createElement("div");
+                        messageDiv.classList.add("message");
+                        messageDiv.dataset.id = message.id;
+                        messageDiv.innerHTML = `
+                        <strong>${message.user}</strong>
+                        <small>${message.createdAt}</small>
+                        <p>${message.content}</p>
+                        <div class="message-actions">
+                        <button class="report-btn" data-id="${message.id}" title="Signaler">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </button>
+                        ${message.user === currentUserId ? `
+                            <button class="delete-btn" data-id="${message.id}" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        ` : ""}
+                    </div>
+                    `;
+                        messagesContainer.appendChild(messageDiv);
+                    });
+
+                    attachEventListeners();
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                })
+                .catch(error => console.error("Erreur lors du chargement des messages:", error));
+        }
+
+        // Attacher les événements aux boutons après le chargement des messages
+        function attachEventListeners() {
+            document.querySelectorAll('.report-btn').forEach(button => {
+                button.onclick = function () {
+                    const messageId = this.dataset.id;
+                    fetch(`/forum/report/${messageId}`, { method: 'POST' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) alert("Message signalé !");
+                        })
+                        .catch(error => console.error("Erreur lors du signalement :", error));
+                };
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.onclick = function () {
+                    const messageId = this.dataset.id;
+
+                    if (!confirm("Êtes-vous sûr de vouloir supprimer ce message ?")) return;
+
+                    fetch(`/forum/delete/${messageId}`, { method: 'DELETE' })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(data => {
+                                    throw new Error(data.message || "Erreur lors de la suppression.");
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                document.querySelector(`.message[data-id="${messageId}"]`).remove();
+                            } else {
+                                alert(data.message || "Impossible de supprimer le message.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Erreur:", error);
+                            alert(error.message || "Une erreur s'est produite.");
+                        });
+                };
+            });
+        }
+
+        // Envoyer un message
+        document.getElementById("message-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const messageText = document.getElementById("message-text").value.trim();
+            if (!messageText) return;
+
+            fetch("/forum/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content: messageText }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("message-text").value = "";
+                        loadMessages();
+                    } else {
+                        alert("Échec de l'envoi du message.");
+                    }
+                })
+                .catch(error => console.error("Erreur lors de l'envoi du message:", error));
+        });
+
+        // Charger les messages au chargement de la page
+        document.addEventListener("DOMContentLoaded", loadMessages);
+
+    </script>
+{% endblock %}
 {% endblock %}
