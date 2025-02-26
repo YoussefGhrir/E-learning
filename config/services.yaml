@@ -6,6 +6,8 @@
 parameters:
     profile_pictures_directory: '%kernel.project_dir%/public/uploads/profile_pictures'
     uploads_directory: '%kernel.project_dir%/public/uploads/uploadposte'
+    gemini_api_key: '%env(GEMINI_API_KEY)%'
+  
 
 services:
     # default configuration for services in *this* file
@@ -22,6 +24,10 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+   
+    App\Service\GeminiService:
+        arguments:
+            $apiKey: '%gemini_api_key%'  
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

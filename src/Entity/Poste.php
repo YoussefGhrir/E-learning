@@ -48,6 +48,8 @@ class Poste
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'postes')]
     private Collection $categories;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $signaled = false;
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -191,6 +193,17 @@ class Poste
     public function setTitle(?string $title): self
     {
         $this->title = $title;
+
+        return $this;
+    }
+    public function isSignaled(): ?bool
+    {
+        return $this->signaled;
+    }
+
+    public function setSignaled(?bool $signaled): static
+    {
+        $this->signaled = $signaled;
 
         return $this;
     }

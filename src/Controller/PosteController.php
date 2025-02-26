@@ -18,14 +18,17 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 #[Route('/poste')]
 final class PosteController extends AbstractController{
     #[Route(name: 'app_poste_index', methods: ['GET'])]
-    public function index(PosteRepository $posteRepository, LikeRepository $likeRepository): Response
+public function index(PosteRepository $posteRepository, LikeRepository $likeRepository): Response
 {
-    $postes = $posteRepository->findAll();
     $user = $this->getUser();
+    $postes = $posteRepository->findAll();
     $likedPostes = [];
+    $filteredPostes = array_filter($postes, function ($poste) use ($user) {
+        return $poste->getUser() !== $user; 
+    });
 
     if ($user) {
-        foreach ($postes as $poste) {
+        foreach ($filteredPostes as $poste) {
             foreach ($poste->getLikes() as $like) {
                 if ($like->getUser() === $user) {
                     $likedPostes[] = $poste->getId();
@@ -35,15 +38,58 @@ final class PosteController extends AbstractController{
         }
     }
 
-    // Debugging
-    //dump($likedPostes); die;
-
     return $this->render('poste/index.html.twig', [
-        'postes' => $postes,
+        'postes' => $filteredPostes,
         'likedPostes' => $likedPostes,
         'user' => $user,
     ]);
 }
+#[Route('/mypost',name: 'app_poste_my_posts', methods: ['GET'])]
+public function myPosts(PosteRepository $posteRepository): Response
+{
+    $user = $this->getUser();
+    if (!$user) {
+        throw $this->createAccessDeniedException('You must be logged in to view your posts.');
+    }
+
+    $myPostes = $posteRepository->findByUser($user);
+    $likedPostes = [];
+
+    foreach ($myPostes as $poste) {
+        foreach ($poste->getLikes() as $like) {
+            if ($like->getUser() === $user) {
+                $likedPostes[] = $poste->getId();
+                break;
+            }
+        }
+    }
+
+    return $this->render('poste/index1.html.twig', [
+        'postes' => $myPostes,
+        'likedPostes' => $likedPostes,
+        'user' => $user,
+    ]);
+}
+#[Route('/report/{id}', name: 'poste_report', methods: ['POST'])]
+public function reportPost(int $id, EntityManagerInterface $entityManager): JsonResponse
+{
+    $user = $this->getUser();
+    if (!$user) {
+        return new JsonResponse(['success' => false, 'message' => 'Utilisateur non authentifié'], 403);
+    }
+
+    $poste = $entityManager->getRepository(Poste::class)->find($id);
+    if (!$poste) {
+        return new JsonResponse(['success' => false, 'message' => 'Poste non trouvé'], 404);
+    }
+
+    $poste->setSignaled(true); 
+    $entityManager->persist($poste);
+    $entityManager->flush();
+
+    return new JsonResponse(['success' => true, 'message' => 'Poste signalé avec succès']);
+}
+
     #[Route('/comment/add/{id}', name: 'add_comment', methods: ['POST'])]
     public function addComment(Request $request, Poste $poste, EntityManagerInterface $entityManager): JsonResponse
     {
@@ -135,13 +181,24 @@ final class PosteController extends AbstractController{
         Request $request,
         Poste $poste,
         EntityManagerInterface $entityManager,
-        CategoryRepository $categoryRepository // Injectez CategoryRepository
+        CategoryRepository $categoryRepository,
+        SluggerInterface $slugger,
     ): Response {
         $form = $this->createForm(PosteType::class, $poste);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Associer les catégories sélectionnées au poste
+            $imageFile = $form->get('imageFile')->getData();
+
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+                $imageFile->move($this->getParameter('uploads_directory'), $newFilename);
+                $poste->setImage($newFilename);
+            }
+
             $selectedCategories = $form->get('categories')->getData();
             foreach ($selectedCategories as $category) {
                 $poste->addCategory($category);

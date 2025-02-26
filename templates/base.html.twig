@@ -133,6 +133,29 @@
         {% block body %}
         {% endblock %}
 
+        <!-- Bouton fixe pour ouvrir le chatbot -->
+        <button id="chatbot-toggle" class="chatbot-toggle">
+            💬
+        </button>
+
+        <!-- Modal du chatbot -->
+        <div id="chatbot-modal" class="chatbot-modal">
+            <div class="chatbot-modal-content">
+                <div class="chatbot-header">
+                    <h3>Chatbot</h3>
+                    <button id="chatbot-close" class="chatbot-close">&times;</button>
+                </div>
+                <div id="chatbot-messages" class="chatbot-messages">
+                    <!-- Messages du chatbot seront affichés ici -->
+                </div>
+                <form id="chatbot-form" class="chatbot-form">
+                    <textarea id="chatbot-input" placeholder="Écrivez votre message..." required></textarea>
+                    <button type="submit">Envoyer</button>
+                </form>
+            </div>
+        </div>
+
+
     </article>
 </main>
 
@@ -265,11 +288,7 @@
 <a href="#top" class="back-top-btn" aria-label="back to top" data-back-top-btn>
     <ion-icon name="chevron-up" aria-hidden="true"></ion-icon>
 </a>
-
-    {% block javascripts %}
-        <script src="{{ asset('chatbot.js') }}"></script>
-    {% endblock %}
-
+{% block javascripts %}{% endblock %}
 <!-- SCRIPTS -->
 <script src="{{ asset('js/script.js') }}" defer></script>
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>

@@ -1,0 +1,34 @@
+{% extends 'dashboard.html.twig' %}
+
+{% block title %}Reported Posts Dashboard{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>Reported Posts Dashboard</h2>
+
+    {% for post in postes %}
+        <div class="post border p-3 mb-3">
+            <strong>{{ post.user.email }}</strong>
+          
+            <p>{{ post.contenu }}</p>
+
+            <!-- Delete button with CSRF protection -->
+            <form action="{{ path('forumdashboard_delete_poste', {'id': post.id}) }}" method="post" style="display: inline;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                    Delete
+                </button>
+            </form>
+
+            <!-- Unreport button (only visible if post is reported) -->
+            {% if post.isSignaled %}
+                <a href="{{ path('forum_unreport_poste', {'id': post.id}) }}" class="btn btn-warning btn-sm">
+                    🚨 Unreport
+                </a>
+            {% endif %}
+        </div>
+    {% else %}
+        <p>No reported posts found.</p>
+    {% endfor %}
+</div>
+{% endblock %}

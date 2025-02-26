@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gemini AI Test{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Gemini AI Response</h1>
+
+        <form method="post" action="{{ path('gemini_test') }}">
+            <div class="mb-3">
+                <label for="prompt" class="form-label">Enter a prompt:</label>
+                <input type="text" class="form-control" id="prompt" name="prompt" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Generate</button>
+        </form>
+
+        {% if response is defined %}
+            <div class="mt-4 p-3 border rounded bg-light">
+                <h4>Response:</h4>
+                <p>{{ response }}</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

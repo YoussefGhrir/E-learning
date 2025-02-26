@@ -122,14 +122,6 @@
             background-color: #6c757d;
             color: white;
         }
-        .report-btn {
-        background-color: #ffcc00;
-        color: black;
-    }
-
-    .report-btn:hover {
-        background-color: #e6b800;
-    }
     </style>
 {% endblock %}
 
@@ -168,9 +160,14 @@
                                     </button>
                                     <button class="btn btn-comment">
                                         <i class="fa-regular fa-comment"></i> Comment
-                                    <button class="report-btn" data-id="{{ poste.id }}" title="Signaler">
-    <i class="fas fa-exclamation-triangle"></i> Signaler
-</button>
+                                    </button>
+                                    {% if poste.user.id == user.id %}
+                                        <a href="{{ path('app_poste_edit', {id: poste.id}) }}" class="btn btn-modifier">Modifier</a>
+                                        <form class="delete-form" data-id="{{ poste.id }}" method="POST" action="{{ path('app_poste_delete', {id: poste.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ poste.id) }}">
+                                            <button type="submit" class="btn btn-supprimer">Supprimer</button>
+                                        </form>
+                                    {% endif %}
                                 </div>
                             </div>
                         </article>
@@ -446,35 +443,6 @@
             });
         });
     </script>
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".report-btn").forEach(button => {
-        button.addEventListener("click", function (event) {
-            event.stopPropagation();
-            const postId = this.getAttribute("data-id");
-
-            if (confirm("Voulez-vous vraiment signaler ce poste ?")) {
-                fetch(`/poste/report/${postId}`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-Requested-With": "XMLHttpRequest",
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("Poste signalé avec succès !");
-                    } else {
-                        alert("Erreur : " + data.message);
-                    }
-                })
-                .catch(error => console.error("Erreur lors du signalement :", error));
-            }
-        });
-    });
-});
-</script>
 {% endblock %}
 
 {% block javascripts %}
