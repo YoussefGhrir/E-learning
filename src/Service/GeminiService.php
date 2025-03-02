@@ -19,10 +19,17 @@ class GeminiService
     {
         $url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key={$this->apiKey}";
 
+        // Ajout d'un contexte pour guider le modèle
+        $context = "You are an AI assistant specialized in education and culture. Answer questions in these fields. " .
+            "Politely decline questions outside of these topics.";
+
+        // Fusion du contexte avec le prompt utilisateur
+        $fullPrompt = $context . " User's question: " . $prompt;
+
         $response = $this->client->request('POST', $url, [
             'json' => [
                 'contents' => [
-                    ['parts' => [['text' => $prompt]]]
+                    ['parts' => [['text' => $fullPrompt]]]
                 ],
             ],
         ]);

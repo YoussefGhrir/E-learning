@@ -24,7 +24,7 @@ public function index(PosteRepository $posteRepository, LikeRepository $likeRepo
     $postes = $posteRepository->findAll();
     $likedPostes = [];
     $filteredPostes = array_filter($postes, function ($poste) use ($user) {
-        return $poste->getUser() !== $user; 
+        return $poste->getUser() !== $user;
     });
 
     if ($user) {
@@ -158,7 +158,7 @@ public function reportPost(int $id, EntityManagerInterface $entityManager): Json
             $entityManager->persist($poste);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_poste_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_poste_my_posts', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('poste/new.html.twig', [
@@ -181,40 +181,28 @@ public function reportPost(int $id, EntityManagerInterface $entityManager): Json
         Request $request,
         Poste $poste,
         EntityManagerInterface $entityManager,
-        CategoryRepository $categoryRepository,
-        SluggerInterface $slugger,
+        CategoryRepository $categoryRepository
     ): Response {
         $form = $this->createForm(PosteType::class, $poste);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $imageFile = $form->get('imageFile')->getData();
-
-            if ($imageFile) {
-                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
-
-                $imageFile->move($this->getParameter('uploads_directory'), $newFilename);
-                $poste->setImage($newFilename);
-            }
-
-            $selectedCategories = $form->get('categories')->getData();
-            foreach ($selectedCategories as $category) {
-                $poste->addCategory($category);
-            }
-
+            // Enregistrer les données mises à jour
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_poste_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_poste_my_posts', [], Response::HTTP_SEE_OTHER);
         }
+
+        // Récupérer les catégories déjà sélectionnées
+        $selectedCategories = $poste->getCategories();
 
         return $this->render('poste/edit.html.twig', [
             'poste' => $poste,
-            'form' => $form,
-            'categories' => $categoryRepository->findAll(), // Passez les catégories au template
+            'form' => $form->createView(),
+            'selectedCategories' => $selectedCategories, // Passer les catégories sélectionnées au template
         ]);
     }
+
     #[Route('/{id}', name: 'app_poste_delete', methods: ['POST'])]
     public function delete(Request $request, Poste $poste, EntityManagerInterface $entityManager): Response
     {

@@ -12,13 +12,13 @@ class CategoryFixtures extends Fixture
     {
         $categories = [
             'Sciences',
-            'Langues',
+            'Languages',
             'Arts',
-            'Technologie',
+            'Technology',
             'Business',
-            'Santé',
-            'Développement Personnel',
-            'Vente',  // Ajout de la catégorie Vente
+            'Health',
+            'Personal Development',
+            'Sales',  // Updated to English
         ];
 
         foreach ($categories as $categoryName) {

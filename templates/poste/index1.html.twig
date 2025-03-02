@@ -1,16 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Poste index{% endblock %}
+{% block title %}Post Index{% endblock %}
 
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('css/post.css') }}">
     <style>
-        /* Style pour les commentaires */
+        /* Style for comments */
         #modal-comments-list li {
-            border: 1px solid #dee2e6; /* Bordure légère */
-            background-color: #ffffff; /* Fond blanc */
-            border-radius: 8px; /* Coins arrondis */
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Ombre plus marquée */
+            border: 1px solid #dee2e6; /* Light border */
+            background-color: #ffffff; /* White background */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
             padding: 15px;
             margin-bottom: 10px;
         }
@@ -19,20 +19,20 @@
             border-bottom: none;
         }
 
-        /* Style pour l'avatar */
+        /* Style for the avatar */
         .rounded-circle {
             border: 2px solid #fff;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Ombre plus marquée */
-            width: 50px; /* Taille augmentée */
-            height: 50px; /* Taille augmentée */
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* More pronounced shadow */
+            width: 50px; /* Increased size */
+            height: 50px; /* Increased size */
             object-fit: cover;
         }
 
-        /* Style pour le cadre "Pas de photo" */
+        /* Style for the "No photo" frame */
         .bg-secondary {
             background-color: #6c757d !important;
-            width: 50px; /* Taille augmentée */
-            height: 50px; /* Taille augmentée */
+            width: 50px; /* Increased size */
+            height: 50px; /* Increased size */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -44,62 +44,62 @@
             color: #fff;
         }
 
-        /* Style pour les boutons Modifier et Supprimer */
+        /* Style for Edit and Delete buttons */
         .btn-edit-comment, .btn-delete-comment {
-            padding: 8px 12px; /* Plus d'espace */
-            font-size: 14px; /* Taille de police augmentée */
+            padding: 8px 12px; /* More space */
+            font-size: 14px; /* Increased font size */
             margin-right: 5px;
             border: none;
             border-radius: 5px;
             display: inline-flex;
             align-items: center;
-            transition: background-color 0.3s ease; /* Transition douce */
+            transition: background-color 0.3s ease; /* Smooth transition */
         }
 
         .btn-edit-comment {
-            background-color: #007bff; /* Couleur bleue */
-            color: #fff; /* Texte blanc */
+            background-color: #007bff; /* Blue color */
+            color: #fff; /* White text */
         }
 
         .btn-edit-comment:hover {
-            background-color: #0056b3; /* Couleur plus foncée au survol */
+            background-color: #0056b3; /* Darker color on hover */
         }
 
         .btn-delete-comment {
-            background-color: #dc3545; /* Couleur rouge */
-            color: #fff; /* Texte blanc */
+            background-color: #dc3545; /* Red color */
+            color: #fff; /* White text */
         }
 
         .btn-delete-comment:hover {
-            background-color: #c82333; /* Couleur plus foncée au survol */
+            background-color: #c82333; /* Darker color on hover */
         }
 
         .btn-edit-comment i, .btn-delete-comment i {
             margin-right: 5px;
         }
 
-        /* Style pour le modal */
+        /* Style for the modal */
         .modal-dialog {
-            max-width: 600px; /* Largeur maximale réduite */
-            width: 90%; /* Largeur par défaut */
+            max-width: 600px; /* Reduced maximum width */
+            width: 90%; /* Default width */
         }
 
         .modal-body {
-            max-height: 80vh; /* Hauteur maximale augmentée */
-            overflow-y: auto; /* Scroll si nécessaire */
+            max-height: 80vh; /* Increased maximum height */
+            overflow-y: auto; /* Scroll if necessary */
         }
 
-        /* Style pour le champ de modification */
+        /* Style for the edit field */
         .edit-comment-textarea {
             width: 100%;
-            padding: 10px; /* Plus d'espace */
-            border: 1px solid #ced4da; /* Bordure grise */
-            border-radius: 8px; /* Coins arrondis */
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Ombre légère */
+            padding: 10px; /* More space */
+            border: 1px solid #ced4da; /* Gray border */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Light shadow */
             resize: vertical;
         }
 
-        /* Style pour les boutons de modification */
+        /* Style for the edit buttons */
         .edit-comment-buttons {
             margin-top: 10px;
             display: flex;
@@ -122,6 +122,7 @@
             background-color: #6c757d;
             color: white;
         }
+
     </style>
 {% endblock %}
 
@@ -162,10 +163,10 @@
                                         <i class="fa-regular fa-comment"></i> Comment
                                     </button>
                                     {% if poste.user.id == user.id %}
-                                        <a href="{{ path('app_poste_edit', {id: poste.id}) }}" class="btn btn-modifier">Modifier</a>
+                                        <a href="{{ path('app_poste_edit', {id: poste.id}) }}" class="btn btn-modifier">Edit</a>
                                         <form class="delete-form" data-id="{{ poste.id }}" method="POST" action="{{ path('app_poste_delete', {id: poste.id}) }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ poste.id) }}">
-                                            <button type="submit" class="btn btn-supprimer">Supprimer</button>
+                                            <button type="submit" class="btn btn-supprimer">Delete</button>
                                         </form>
                                     {% endif %}
                                 </div>
@@ -182,7 +183,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="commentModalLabel">Commentaires</h5>
+                    <h5 class="modal-title" id="commentModalLabel">Comments</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -193,7 +194,7 @@
                     </div>
 
                     <!-- Comments Section -->
-                    <h5>Commentaires:</h5>
+                    <h5>Comments:</h5>
                     <div id="modal-comments-container">
                         <ul id="modal-comments-list" class="list-unstyled">
                             <!-- Comments will be dynamically inserted here -->
@@ -204,9 +205,9 @@
                     <form id="comment-form" class="mt-3">
                         <input type="hidden" id="modal-post-id">
                         <div class="mb-3">
-                            <textarea id="comment-text" class="form-control" placeholder="Écrivez un commentaire..." rows="3" required></textarea>
+                            <textarea id="comment-text" class="form-control" placeholder="Write a comment..." rows="3" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Publier</button>
+                        <button type="submit" class="btn btn-primary">Publish</button>
                     </form>
                 </div>
             </div>
@@ -229,53 +230,53 @@
                             li.classList.add("mb-3", "p-3", "bg-light", "rounded");
                             li.dataset.id = comment.id;
                             li.innerHTML = `
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="flex-shrink-0">
-                                    ${comment.user.profilePicture
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="flex-shrink-0">
+                                ${comment.user.profilePicture
                                 ? `<img src="${comment.user.profilePicture}" alt="${comment.user.firstName}" class="rounded-circle" width="40" height="40">`
                                 : `<div class="rounded-circle bg-secondary">
-                                            <span class="text-white">Pas de photo</span>
-                                        </div>`
+                                        <span class="text-white">No photo</span>
+                                    </div>`
                             }
-                                </div>
-                                <div class="flex-grow-1 ms-3">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <strong>${comment.user.firstName} ${comment.user.lastName}</strong>
-                                        <small class="text-muted">${new Date(comment.createdAt).toLocaleString('fr-FR', {
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <strong>${comment.user.firstName} ${comment.user.lastName}</strong>
+                                    <small class="text-muted">${new Date(comment.createdAt).toLocaleString('fr-FR', {
                                 year: 'numeric',
                                 month: 'numeric',
                                 day: 'numeric',
                                 hour: '2-digit',
                                 minute: '2-digit'
                             })}</small>
-                                    </div>
-                                    <p class="mb-0 comment-content">${comment.content}</p>
-                                    ${comment.user.id === currentUserId
+                                </div>
+                                <p class="mb-0 comment-content">${comment.content}</p>
+                                ${comment.user.id === currentUserId
                                 ? `<div class="mt-2">
-                                            <button class="btn btn-sm btn-warning btn-edit-comment" data-comment-id="${comment.id}">
-                                                <i class="fas fa-edit"></i> Modifier
-                                            </button>
-                                            <button class="btn btn-sm btn-danger btn-delete-comment" data-comment-id="${comment.id}">
-                                                <i class="fas fa-trash"></i> Supprimer
-                                            </button>
-                                        </div>`
+                                        <button class="btn btn-sm btn-warning btn-edit-comment" data-comment-id="${comment.id}">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-danger btn-delete-comment" data-comment-id="${comment.id}">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>`
                                 : ''
                             }
-                                </div>
                             </div>
-                        `;
+                        </div>
+                    `;
                             commentsList.appendChild(li);
                         });
                         attachCommentEventListeners();
                     })
-                    .catch(error => console.error("Erreur lors du chargement des commentaires:", error));
+                    .catch(error => console.error("Error loading comments:", error));
             }
 
             function attachCommentEventListeners() {
                 document.querySelectorAll(".btn-delete-comment").forEach(button => {
                     button.addEventListener("click", function () {
                         const commentId = this.dataset.commentId;
-                        if (confirm("Êtes-vous sûr de vouloir supprimer ce commentaire ?")) {
+                        if (confirm("Are you sure you want to delete this comment?")) {
                             fetch(`/poste/comment/delete/${commentId}`, {
                                 method: "POST",
                             })
@@ -285,7 +286,7 @@
                                         loadComments(document.getElementById("modal-post-id").value);
                                     }
                                 })
-                                .catch(error => console.error("Erreur lors de la suppression du commentaire:", error));
+                                .catch(error => console.error("Error deleting comment:", error));
                         }
                     });
                 });
@@ -304,37 +305,37 @@
                         const buttonsDiv = document.createElement("div");
                         buttonsDiv.classList.add("edit-comment-buttons");
                         buttonsDiv.innerHTML = `
-                        <button class="save">Enregistrer</button>
-                        <button class="cancel">Annuler</button>
-                    `;
+                    <button class="save">Save</button>
+                    <button class="cancel">Cancel</button>
+                `;
 
                         commentContent.replaceWith(textarea);
                         commentElement.querySelector("div.mt-2").replaceWith(buttonsDiv);
 
                         buttonsDiv.querySelector("button.cancel").addEventListener("click", function () {
-                            // Remplacer le textarea par le contenu original
+                            // Replace the textarea with the original content
                             textarea.replaceWith(commentContent);
 
-                            // Recréer les boutons Modifier et Supprimer
+                            // Recreate the Edit and Delete buttons
                             const buttonsDivNew = document.createElement("div");
                             buttonsDivNew.classList.add("mt-2");
                             buttonsDivNew.innerHTML = `
-        <button class="btn btn-sm btn-warning btn-edit-comment" data-comment-id="${commentId}">
-            <i class="fas fa-edit"></i> Modifier
-        </button>
-        <button class="btn btn-sm btn-danger btn-delete-comment" data-comment-id="${commentId}">
-            <i class="fas fa-trash"></i> Supprimer
-        </button>
-    `;
+                        <button class="btn btn-sm btn-warning btn-edit-comment" data-comment-id="${commentId}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-danger btn-delete-comment" data-comment-id="${commentId}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    `;
 
-                            // Remplacer les anciens boutons par les nouveaux
+                            // Replace the old buttons with the new ones
                             commentElement.querySelector("div.mt-2").replaceWith(buttonsDivNew);
 
-                            // Réattacher les événements pour les nouveaux boutons
+                            // Reattach events for the new buttons
                             attachCommentEventListeners();
                         });
 
-// Gestion de l'enregistrement
+                        // Handling save
                         buttonsDiv.querySelector("button.save").addEventListener("click", function () {
                             const newContent = textarea.value.trim();
                             if (newContent) {
@@ -348,10 +349,10 @@
                                     .then(response => response.json())
                                     .then(data => {
                                         if (data.success) {
-                                            loadComments(document.getElementById("modal-post-id").value); // Recharger les commentaires
+                                            loadComments(document.getElementById("modal-post-id").value); // Reload comments
                                         }
                                     })
-                                    .catch(error => console.error("Erreur lors de la modification du commentaire:", error));
+                                    .catch(error => console.error("Error editing comment:", error));
                             }
                         });
                     });
@@ -363,7 +364,10 @@
                     const postId = this.getAttribute("data-poste-id");
                     document.getElementById("modal-post-id").value = postId;
                     document.getElementById("modal-post-image").src = this.querySelector("img").src;
-                    document.getElementById("modal-post-content").textContent = this.querySelector(".entry-content p").textContent;
+
+                    // Récupérer le contenu complet depuis l'attribut data-contenu-complet
+                    const contenuComplet = this.getAttribute("data-contenu-complet");
+                    document.getElementById("modal-post-content").textContent = contenuComplet;
 
                     loadComments(postId);
 
@@ -393,7 +397,7 @@
                             loadComments(postId);
                         }
                     })
-                    .catch(error => console.error("Erreur lors de l'ajout du commentaire:", error));
+                    .catch(error => console.error("Error adding comment:", error));
             });
         });
 
@@ -413,7 +417,7 @@
                 })
                     .then(response => {
                         if (!response.ok) {
-                            throw new Error("Erreur réseau");
+                            throw new Error("Network error");
                         }
                         return response.json();
                     })
@@ -434,11 +438,11 @@
 
                             likeCount.textContent = data.likesCount;
                         } else {
-                            console.error("Erreur :", data.message);
+                            console.error("Error:", data.message);
                         }
                     })
                     .catch(error => {
-                        console.error("Erreur lors de la gestion du like:", error);
+                        console.error("Error handling like:", error);
                     });
             });
         });
@@ -446,6 +450,6 @@
 {% endblock %}
 
 {% block javascripts %}
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}

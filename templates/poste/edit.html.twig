@@ -1,13 +1,112 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Poste{% endblock %}
+{% block title %}Edit Post{% endblock %}
 
 {% block body %}
+    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+    <div class="background-image" style="position: relative; height: 100vh; background-image: url('{{ asset('images/img.png') }}'); background-size: cover; background-position: center;">
+        <div class="w3-content" style="display: flex; justify-content: center; align-items: center; height: 100%; padding: 20px;">
+            <div style="max-width: 800px; width: 100%; padding: 20px; background-color: rgba(249, 249, 249, 0.8); border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px);">
+                <h1 style="text-align: center; color: #333;">Update Your Post</h1>
 
+                <div class="form-group">
+                    {{ form_row(form.title, { 'attr': {'class': 'form-control', 'placeholder': 'Enter post title...'} }) }}
+                </div>
 
-    {{ include('poste/_form.html.twig', {'button_label': 'Update'}) }}
+                <div class="form-group" style="margin-bottom: 30px;">
+                    {{ form_row(form.contenu, { 'attr': {'class': 'form-control', 'placeholder': 'Enter post content...'} }) }}
+                </div>
 
-    <a href="{{ path('app_poste_index') }}">back to list</a>
+                <div class="form-group">
+                    <div class="drag-drop-area" id="drag-drop-area" style="border: 2px dashed #ccc; padding: 20px; text-align: center; cursor: pointer; margin-bottom: 20px; background-color: #fff; border-radius: 8px;">
+                        <p>Drag and drop an image here or click to select a file.</p>
+                        <img src="" alt="Preview" class="preview-image" id="preview-image" style="display: none; max-width: 100%; max-height: 200px; border-radius: 8px;">
+                        {{ form_widget(form.imageFile, { 'attr': {'style': 'display: none;'} }) }}
+                    </div>
+                </div>
 
-    {{ include('poste/_delete_form.html.twig') }}
+                <div class="category-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px;">
+                    {% for category in form.categories %}
+                        <div class="category-button" data-category-id="{{ category.vars.id }}" style="padding: 10px 15px; border: 1px solid #007bff; border-radius: 20px; cursor: pointer; background-color: {% if category.vars.value in selectedCategories|map(c => c.id) %} #007bff {% else %} #f0f8ff {% endif %}; color: {% if category.vars.value in selectedCategories|map(c => c.id) %} #fff {% else %} #007bff {% endif %}; font-weight: bold; text-align: center;">
+                            {{ form_widget(category, { 'attr': {'style': 'display: none;'} }) }}
+                            {{ form_label(category, null, { 'label_attr': {'style': 'cursor: pointer;'} }) }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" style="display: block; width: 100%; padding: 10px; background-color: #28a745; color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">Update</button>
+
+                {% if form.vars.errors|length > 0 %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for error in form.vars.errors %}
+                                <li>{{ error.message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <a href="{{ path('app_poste_my_posts') }}" class="back-link" style="display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none;">Back to list</a>
+            </div>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
+    {% block javascripts %}
+        <script>
+            document.querySelectorAll('.category-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    checkbox.checked = !checkbox.checked;
+                    this.style.backgroundColor = checkbox.checked ? '#007bff' : '#f0f8ff';
+                    this.style.color = checkbox.checked ? '#fff' : '#007bff';
+                });
+            });
+        </script>
+        <script>
+            const dragDropArea = document.getElementById('drag-drop-area');
+            const fileInput = document.querySelector('input[type="file"]');
+            const previewImage = document.getElementById('preview-image');
+
+            dragDropArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dragDropArea.classList.add('dragover');
+            });
+
+            dragDropArea.addEventListener('dragleave', (e) => {
+                dragDropArea.classList.remove('dragover');
+            });
+
+            dragDropArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dragDropArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        previewImage.src = event.target.result;
+                        previewImage.style.display = 'block';
+                    };
+                    reader.readAsDataURL(files[0]);
+                }
+            });
+
+            dragDropArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        previewImage.src = event.target.result;
+                        previewImage.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        </script>
+    {% endblock %}
 {% endblock %}

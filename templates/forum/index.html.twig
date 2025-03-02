@@ -1,165 +1,164 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Forum{% endblock %}
-{% block stylesheets %} <style>
-    body {
-        padding-top: 120px;
-        margin: 0;
-        background-image: url('{{ asset('images/img.png') }}');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-    }
+{% block stylesheets %}
+    <style>
+        body {
+            padding-top: 120px;
+            margin: 0;
+            background-image: url('{{ asset('images/img.png') }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
 
-    .container-fluid {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        padding: 20px;
-    }
+        .container-fluid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-    .chat-box {
-        width: 900px;
-        max-width: 95%;
-        height: 85vh;
-        display: flex;
-        flex-direction: column;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 20px;
-        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
-        overflow: hidden;
-        backdrop-filter: blur(10px);
-    }
+        .chat-box {
+            width: 900px;
+            max-width: 95%;
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
 
-    #messages-container {
-        flex-grow: 1;
-        padding: 20px;
-        overflow-y: auto;
-        background-color: rgba(255, 255, 255, 0.8);
-    }
+        #messages-container {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
 
-    .message {
-        background: rgba(248, 249, 250, 0.9);
-        padding: 15px;
-        border-radius: 12px;
-        margin-bottom: 15px;
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    }
+        .message {
+            background: rgba(248, 249, 250, 0.9);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
-    .message strong {
-        color: #007bff;
-    }
+        .message strong {
+            color: #007bff;
+        }
 
-    .message small {
-        float: right;
-        color: #999;
-    }
+        .message small {
+            float: right;
+            color: #999;
+        }
 
-    .actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px; /* Espacement entre les boutons */
-    }
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px; /* Espacement entre les boutons */
+        }
 
-    button {
-        border: none;
-        padding: 8px 12px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
-        display: flex;
-        align-items: center;
-        gap: 5px; /* Espacement entre icône et texte */
-        transition: background-color 0.3s ease;
-    }
+        button {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Espacement entre icône et texte */
+            transition: background-color 0.3s ease;
+        }
 
-    .report-btn {
-        background-color: #ffcc00;
-        color: black;
-    }
+        .report-btn {
+            background-color: #ffcc00;
+            color: black;
+        }
 
-    .report-btn:hover {
-        background-color: #e6b800;
-    }
+        .report-btn:hover {
+            background-color: #e6b800;
+        }
 
-    .delete-btn {
-        background-color: #ff4d4d;
-        color: white;
-    }
+        .delete-btn {
+            background-color: #ff4d4d;
+            color: white;
+        }
 
-    .delete-btn:hover {
-        background-color: #cc0000;
-    }
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
 
-    .theme-toggle {
-        position: fixed;
-        top: 135px; /* Décalé de 120px + 15px */
-        right: 15px;
-        background-color: #007bff;
-        color: white;
-        padding: 10px;
-        border-radius: 50%;
-        cursor: pointer;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+        .theme-toggle {
+            position: fixed;
+            top: 135px; /* Décalé de 120px + 15px */
+            right: 15px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .dark-mode {
-        background-color: #1e1e1e;
-        color: white;
-    }
+        .dark-mode {
+            background-color: #1e1e1e;
+            color: white;
+        }
 
-    .dark-mode .chat-box {
-        background: rgba(30, 30, 30, 0.9);
-    }
+        .dark-mode .chat-box {
+            background: rgba(30, 30, 30, 0.9);
+        }
 
-    .dark-mode #messages-container {
-        background-color: rgba(40, 40, 40, 0.8);
-    }
+        .dark-mode #messages-container {
+            background-color: rgba(40, 40, 40, 0.8);
+        }
 
-    #message-form {
-        display: flex;
-        align-items: center;
-        padding: 15px;
-        background-color: rgba(255, 255, 255, 0.9);
-        border-top: 2px solid #ddd;
-    }
+        #message-form {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-top: 2px solid #ddd;
+        }
 
-    #message-text {
-        flex-grow: 1;
-        border-radius: 10px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        resize: none;
-        margin-right: 10px;
-    }
+        #message-text {
+            flex-grow: 1;
+            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            resize: none;
+            margin-right: 10px;
+        }
 
-    #mic-button {
-        background-color: #6a28a7;
-        color: white;
-    }
+        #mic-button {
+            background-color: #6a28a7;
+            color: white;
+        }
 
-    .language-select {
-        margin-right: 10px;
-        padding: 5px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-    }
-    </style>{% endblock %}
+        .language-select {
+            margin-right: 10px;
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-
-
     <div class="container-fluid">
         <div class="chat-box">
             <div id="messages-container">
 
             </div>
-
 
             <form id="message-form">
                 <textarea id="message-text" placeholder="Écrire un message..." required></textarea>
@@ -173,6 +172,11 @@
             </form>
         </div>
     </div>
+
+
+
+
+
 
     <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
 
@@ -218,12 +222,13 @@
         const currentUserId = {{ user.email|json_encode|raw }};
     </script>
     <script>
+        // Fonction pour charger et afficher les messages
         function loadMessages() {
             fetch("/forum/messages")
                 .then(response => response.json())
                 .then(data => {
                     const messagesContainer = document.getElementById("messages-container");
-                    messagesContainer.innerHTML = "";
+                    messagesContainer.innerHTML = ""; // Vider le conteneur avant de charger les nouveaux messages
                     data.messages.forEach(message => {
                         let messageDiv = document.createElement("div");
                         messageDiv.classList.add("message");
@@ -233,26 +238,29 @@
                         <small>${message.createdAt}</small>
                         <p>${message.content}</p>
                         <div class="message-actions">
-                        <button class="report-btn" data-id="${message.id}" title="Signaler">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </button>
-                        ${message.user === currentUserId ? `
-                            <button class="delete-btn" data-id="${message.id}" title="Supprimer">
-                                <i class="fas fa-trash"></i>
+                            <button class="report-btn" data-id="${message.id}" title="Signaler">
+                                <i class="fas fa-exclamation-triangle"></i>
                             </button>
-                        ` : ""}
-                    </div>
+                            ${message.user === currentUserId ? `
+                                <button class="delete-btn" data-id="${message.id}" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            ` : ""}
+                        </div>
                     `;
                         messagesContainer.appendChild(messageDiv);
                     });
 
+                    // Attacher les événements aux boutons
                     attachEventListeners();
+
+                    // Faire défiler automatiquement vers le bas pour afficher les nouveaux messages
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 })
-                .catch(error => console.error("Erreur lors du chargement des messages:", error));
+                .catch(error => console.error("Erreur lors du chargement des messages :", error));
         }
 
-        // Attacher les événements aux boutons après le chargement des messages
+        // Fonction pour attacher les événements aux boutons (après le chargement des messages)
         function attachEventListeners() {
             document.querySelectorAll('.report-btn').forEach(button => {
                 button.onclick = function () {
@@ -260,7 +268,11 @@
                     fetch(`/forum/report/${messageId}`, { method: 'POST' })
                         .then(response => response.json())
                         .then(data => {
-                            if (data.success) alert("Message signalé !");
+                            if (data.success) {
+                                alert("Message signalé !");
+                            } else {
+                                alert(data.message || "Échec du signalement.");
+                            }
                         })
                         .catch(error => console.error("Erreur lors du signalement :", error));
                 };
@@ -289,39 +301,52 @@
                             }
                         })
                         .catch(error => {
-                            console.error("Erreur:", error);
+                            console.error("Erreur :", error);
                             alert(error.message || "Une erreur s'est produite.");
                         });
                 };
             });
         }
 
-        // Envoyer un message
+        // Fonction pour envoyer un message
+        let isSubmitting = false; // Variable pour empêcher une double soumission
+
         document.getElementById("message-form").addEventListener("submit", function (event) {
-            event.preventDefault();
+            event.preventDefault(); // Bloquer l'envoi par défaut du formulaire
             const messageText = document.getElementById("message-text").value.trim();
-            if (!messageText) return;
+
+            if (!messageText) return; // Empêcher l'envoi de messages vides
+
+            if (isSubmitting) return; // Vérifier si un envoi est déjà en cours
+            isSubmitting = true; // Activer le verrouillage
 
             fetch("/forum/add", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ content: messageText }),
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Erreur lors de la soumission du message.");
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
-                        document.getElementById("message-text").value = "";
-                        loadMessages();
+                        document.getElementById("message-text").value = ""; // Vider le champ message
+                        loadMessages(); // Recharger les messages
                     } else {
-                        alert("Échec de l'envoi du message.");
+                        alert(data.message || "Échec de l'envoi du message.");
                     }
                 })
-                .catch(error => console.error("Erreur lors de l'envoi du message:", error));
+                .catch(error => console.error("Erreur lors de l'envoi du message :", error))
+                .finally(() => {
+                    isSubmitting = false; // Désactiver le verrouillage après traitement
+                });
         });
 
         // Charger les messages au chargement de la page
         document.addEventListener("DOMContentLoaded", loadMessages);
-
     </script>
 {% endblock %}
 {% endblock %}
